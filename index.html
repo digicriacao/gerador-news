@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./config.js"></script>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -44,7 +45,10 @@ input,textarea,select,button{font-family:inherit}
             <button onClick="{{t.onClick}}" style="padding:16px 12px 13px;border:0;background:none;cursor:pointer;font-size:14px;font-weight:{{t.weight}};color:{{t.color}};border-bottom:2px solid {{t.line}}">{{t.label}}</button>
           </sc-for>
         </div>
-        <div style="display:flex;gap:6px;padding-bottom:10px">
+        <div style="display:flex;gap:6px;padding-bottom:10px;align-items:center">
+          <sc-if value="{{remoteOn}}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{saveRemote}}" title="{{remoteTip}}" style="padding:6px 12px;border:1px solid {{remoteBorder}};border-radius:999px;background:{{remoteBg}};font-size:12px;font-weight:600;cursor:pointer;color:{{remoteFg}};white-space:nowrap">{{remoteLabel}}</button>
+          </sc-if>
           <button onClick="{{undo}}" disabled="{{noUndo}}" style="padding:6px 12px;border:1px solid #E3E3E3;border-radius:999px;background:#fff;font-size:12px;cursor:pointer;color:#1A1A1A;white-space:nowrap;opacity:{{undoOp}}">↶ Desfazer</button>
           <button onClick="{{redo}}" disabled="{{noRedo}}" style="padding:6px 12px;border:1px solid #E3E3E3;border-radius:999px;background:#fff;font-size:12px;cursor:pointer;color:#1A1A1A;white-space:nowrap;opacity:{{redoOp}}">Refazer ↷</button>
         </div>
@@ -87,10 +91,17 @@ input,textarea,select,button{font-family:inherit}
                 <div style="font-size:15px;font-weight:700">Editando notícia {{sel.n}}</div>
                 <div style="font-size:11.5px;color:#8A8A8A">Use **negrito** e ==destaque em cor==</div>
               </div>
+              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:12.5px">
+                <span style="color:#6B6B6B">Tipo:</span>
+                <sc-for list="{{kindOpts}}" as="o" hint-placeholder-count="2">
+                  <button onClick="{{o.onClick}}" style="padding:6px 12px;border-radius:999px;border:1px solid {{o.border}};background:{{o.bg}};color:{{o.color}};font-size:12px;cursor:pointer">{{o.label}}</button>
+                </sc-for>
+              </div>
               <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px">
                 <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Seção (aba)
                   <input list="pru-cats" value="{{sel.category}}" onChange="{{ed.category}}" placeholder="Ex: Produtos" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;color:#1A1A1A">
                 </label>
+                <sc-if value="{{sel.isContent}}" hint-placeholder-val="{{ true }}">
                 <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Fundo do card
                   <select value="{{sel.bg}}" onChange="{{ed.bg}}" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;background:#fff;color:#1A1A1A">
                     <option value="auto">Automático ({{sel.bgAuto}})</option>
@@ -102,10 +113,34 @@ input,textarea,select,button{font-family:inherit}
                     <option value="gradient">Marinho → azul</option>
                   </select>
                 </label>
+                </sc-if>
               </div>
               <datalist id="pru-cats">
                 <sc-for list="{{catNames}}" as="k" hint-placeholder-count="0"><option value="{{k}}"></option></sc-for>
               </datalist>
+
+              <sc-if value="{{sel.isBanner}}" hint-placeholder-val="{{ false }}">
+                <div style="border:1px solid #EFEFEF;border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:12px">
+                  <div style="font-size:13px;font-weight:600">Banner pronto</div>
+                  <div style="font-size:12px;color:#8A8A8A;line-height:1.5">A imagem ocupa o card inteiro, na proporção original, sem texto do gerador por cima. Use para peças já finalizadas.</div>
+                  <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+                    <sc-if value="{{sel.imgSrc}}" hint-placeholder-val="{{ false }}"><img src="{{sel.imgSrc}}" alt="" style="width:96px;height:60px;border-radius:8px;object-fit:cover;border:1px solid #E3E3E3"></sc-if>
+                    <sc-if value="{{sel.bannerMissing}}" hint-placeholder-val="{{ false }}"><div style="width:96px;height:60px;border-radius:8px;border:1.5px dashed #E3B449;background:#FFF8E6;font-size:9.5px;font-weight:600;color:#8A6A10;display:flex;align-items:center;justify-content:center;text-align:center">PENDENTE</div></sc-if>
+                    <label style="padding:9px 16px;border-radius:999px;background:#1A1A1A;color:#fff;font-size:12.5px;font-weight:600;cursor:pointer">{{sel.bannerBtn}}<input type="file" accept="image/*" onChange="{{ed.banner}}" style="display:none"></label>
+                    <button onClick="{{ed.aiImage}}" style="padding:9px 16px;border:1px solid #D9C2F0;border-radius:999px;background:#F7F0FF;font-size:12.5px;font-weight:600;cursor:pointer;color:#5B2A86">✦ Gerar com IA</button>
+                    <sc-if value="{{sel.imgSrc}}" hint-placeholder-val="{{ false }}"><button onClick="{{ed.removeImage}}" style="padding:9px 14px;border:1px solid #E3E3E3;border-radius:999px;background:#fff;font-size:12.5px;cursor:pointer;color:#1A1A1A">Remover</button></sc-if>
+                  </div>
+                  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:12.5px">
+                    <span style="color:#6B6B6B">Largura:</span>
+                    <sc-for list="{{bannerOpts}}" as="o" hint-placeholder-count="2">
+                      <button onClick="{{o.onClick}}" style="padding:6px 12px;border-radius:999px;border:1px solid {{o.border}};background:{{o.bg}};color:{{o.color}};font-size:12px;cursor:pointer">{{o.label}}</button>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{sel.isContent}}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-direction:column;gap:14px">
               <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Título
                 <textarea rows="2" value="{{sel.title}}" onChange="{{ed.title}}" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;resize:vertical;color:#1A1A1A"></textarea>
               </label>
@@ -168,13 +203,16 @@ input,textarea,select,button{font-family:inherit}
                       <sc-if value="{{sel.imgSrc}}" hint-placeholder-val="{{ false }}"><img src="{{sel.imgSrc}}" alt="" style="width:72px;height:54px;border-radius:8px;object-fit:cover;border:1px solid #E3E3E3"></sc-if>
                       <sc-if value="{{sel.imgMissing}}" hint-placeholder-val="{{ false }}"><div style="width:72px;height:54px;border-radius:8px;border:1.5px dashed #E3B449;background:#FFF8E6;font-size:9.5px;font-weight:600;color:#8A6A10;display:flex;align-items:center;justify-content:center;text-align:center">PENDENTE</div></sc-if>
                       <label style="padding:9px 16px;border-radius:999px;background:#1A1A1A;color:#fff;font-size:12.5px;font-weight:600;cursor:pointer">{{sel.imgBtn}}<input type="file" accept="image/*" onChange="{{ed.image}}" style="display:none"></label>
+                      <button onClick="{{ed.aiImage}}" style="padding:9px 16px;border:1px solid #D9C2F0;border-radius:999px;background:#F7F0FF;font-size:12.5px;font-weight:600;cursor:pointer;color:#5B2A86">✦ Gerar com IA</button>
                       <sc-if value="{{sel.imgSrc}}" hint-placeholder-val="{{ false }}"><button onClick="{{ed.removeImage}}" style="padding:9px 14px;border:1px solid #E3E3E3;border-radius:999px;background:#fff;font-size:12.5px;cursor:pointer;color:#1A1A1A">Remover</button></sc-if>
                     </div>
                     <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Posição da imagem no card
                       <select value="{{sel.imgLayout}}" onChange="{{ed.imgLayout}}" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;background:#fff;color:#1A1A1A">
                         <option value="auto">Automático ({{sel.imgAuto}})</option>
                         <option value="right">Lateral direita (com esfumado)</option>
-                        <option value="circle">Círculo ao lado do texto</option>
+                        <option value="left">Lateral esquerda (com esfumado)</option>
+                        <option value="circle">Círculo à direita do texto</option>
+                        <option value="circleLeft">Círculo à esquerda do texto</option>
                         <option value="top">Faixa no topo do card</option>
                       </select>
                     </label>
@@ -186,6 +224,33 @@ input,textarea,select,button{font-family:inherit}
                     <label style="display:flex;gap:8px;align-items:center;font-size:12.5px"><input type="checkbox" checked="{{sel.contain}}" onChange="{{ed.contain}}"> Mostrar a imagem inteira, sem corte</label>
                     <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Legenda / crédito da imagem
                       <input value="{{sel.caption}}" onChange="{{ed.caption}}" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;color:#1A1A1A">
+                    </label>
+                  </div>
+                </sc-if>
+              </div>
+              </div>
+              </sc-if>
+
+              <div style="border:1px solid #EFEFEF;border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px">
+                <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Públicos válidos <span style="font-weight:400;color:#8A8A8A;font-size:11.5px">Texto curto na lateral direita do card, na vertical. Deixe vazio para não exibir.</span>
+                  <input value="{{sel.audience}}" onChange="{{ed.audience}}" maxlength="60" placeholder="Ex: Válido para todos os canais." style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;font-weight:400;color:#1A1A1A">
+                </label>
+                <sc-if value="{{sel.audience}}" hint-placeholder-val="{{ false }}">
+                  <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px">
+                    <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Posição
+                      <select value="{{sel.audiencePos}}" onChange="{{ed.audiencePos}}" style="padding:9px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;background:#fff;color:#1A1A1A">
+                        <option value="top">Topo</option>
+                        <option value="center">Centro</option>
+                        <option value="bottom">Base</option>
+                      </select>
+                    </label>
+                    <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Cor
+                      <select value="{{sel.audienceColor}}" onChange="{{ed.audienceColor}}" style="padding:9px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;background:#fff;color:#1A1A1A">
+                        <option value="auto">Automática</option>
+                        <option value="white">Branca</option>
+                        <option value="navy">Azul-marinho</option>
+                        <option value="blue">Azul</option>
+                      </select>
                     </label>
                   </div>
                 </sc-if>
@@ -210,6 +275,7 @@ input,textarea,select,button{font-family:inherit}
             <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
               <sc-if value="{{heroSrc}}" hint-placeholder-val="{{ false }}"><img src="{{heroSrc}}" alt="" style="width:54px;height:54px;border-radius:50%;object-fit:cover"></sc-if>
               <label style="padding:9px 16px;border-radius:999px;background:#1A1A1A;color:#fff;font-size:12.5px;font-weight:600;cursor:pointer">{{heroBtn}}<input type="file" accept="image/*" onChange="{{edEd.hero}}" style="display:none"></label>
+              <button onClick="{{edEd.aiHero}}" style="padding:9px 16px;border:1px solid #D9C2F0;border-radius:999px;background:#F7F0FF;font-size:12.5px;font-weight:600;cursor:pointer;color:#5B2A86">✦ Gerar com IA</button>
               <sc-if value="{{heroSrc}}" hint-placeholder-val="{{ false }}"><button onClick="{{edEd.removeHero}}" style="padding:9px 14px;border:1px solid #E3E3E3;border-radius:999px;background:#fff;font-size:12.5px;cursor:pointer;color:#1A1A1A">Remover</button></sc-if>
             </div>
             <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px">
@@ -232,7 +298,7 @@ input,textarea,select,button{font-family:inherit}
 
       <sc-if value="{{tabColar}}" hint-placeholder-val="{{ false }}">
         <div style="padding:20px;display:flex;flex-direction:column;gap:14px">
-          <div style="font-size:12.5px;color:#6B6B6B;line-height:1.65">Separe as notícias com uma linha <b>---</b>. Em cada uma, a primeira linha sem rótulo vira o título e o restante vira texto. Rótulos opcionais no início da linha: <b>Seção:</b> <b>Título:</b> <b>Citação:</b> <b>Autor:</b> <b>Chamada:</b> <b>Validade:</b> <b>Imagem: sim</b> <b>Legenda:</b> <b>Crédito:</b>. Linhas iniciadas com “Importante:” ou “Atenção:” viram caixa de aviso; linhas com “- ” viram lista. O texto não é alterado.</div>
+          <div style="font-size:12.5px;color:#6B6B6B;line-height:1.65">Separe as notícias com uma linha <b>---</b>. Em cada uma, a primeira linha sem rótulo vira o título e o restante vira texto. Rótulos opcionais no início da linha: <b>Seção:</b> <b>Título:</b> <b>Citação:</b> <b>Autor:</b> <b>Chamada:</b> <b>Validade:</b> <b>Imagem: sim</b> <b>Legenda:</b> <b>Crédito:</b> <b>Públicos:</b>. Linhas iniciadas com “Importante:” ou “Atenção:” viram caixa de aviso; linhas com “- ” viram lista. O texto não é alterado.</div>
           <textarea rows="14" value="{{paste}}" onChange="{{onPaste}}" placeholder="Seção: Produtos&#10;Dia das Crianças: ==cuidar hoje== também é proteger o amanhã&#10;Neste Dia das Crianças, vale lembrar...&#10;Imagem: sim&#10;---&#10;Seção: Operações&#10;..." style="padding:12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;line-height:1.5;resize:vertical;font-family:ui-monospace,Menlo,monospace;color:#1A1A1A"></textarea>
           <div style="display:flex;gap:8px">
             <button onClick="{{parsePaste}}" style="padding:9px 16px;border:0;border-radius:999px;background:#EA0356;color:#fff;font-size:12.5px;font-weight:600;cursor:pointer">Identificar notícias</button>
@@ -262,6 +328,103 @@ input,textarea,select,button{font-family:inherit}
         </div>
       </sc-if>
 
+
+      <sc-if value="{{tabHist}}" hint-placeholder-val="{{ false }}">
+        <div style="padding:20px;display:flex;flex-direction:column;gap:16px">
+          <sc-if value="{{conn.showForm}}" hint-placeholder-val="{{ true }}">
+            <div style="border:1px solid #EFEFEF;border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:12px">
+              <div style="font-size:14px;font-weight:700">Conectar ao histórico compartilhado</div>
+              <div style="font-size:12px;color:#6B6B6B;line-height:1.55">O histórico fica no servidor da equipe e é o mesmo para todos que usam o gerador. Esse servidor também gera as imagens com IA. Informe a senha da equipe e o seu nome, que aparece em quem salvou cada news.</div>
+              <sc-if value="{{conn.askUrl}}" hint-placeholder-val="{{ false }}">
+                <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Endereço do servidor
+                  <input value="{{conn.fUrl}}" onChange="{{conn.onUrl}}" placeholder="https://gerador-news-api.SEU-USUARIO.workers.dev" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;color:#1A1A1A">
+                </label>
+              </sc-if>
+              <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px">
+                <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Senha da equipe
+                  <input type="password" value="{{conn.fKey}}" onChange="{{conn.onKey}}" onKeyDown="{{conn.onEnter}}" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;color:#1A1A1A">
+                </label>
+                <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Seu nome
+                  <input value="{{conn.fUser}}" onChange="{{conn.onUser}}" onKeyDown="{{conn.onEnter}}" placeholder="Ex: Ana (Digi)" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;color:#1A1A1A">
+                </label>
+              </div>
+              <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+                <button onClick="{{conn.connect}}" style="padding:9px 18px;border:0;border-radius:999px;background:#EA0356;color:#fff;font-size:12.5px;font-weight:600;cursor:pointer">{{conn.btn}}</button>
+                <sc-if value="{{conn.canCancel}}" hint-placeholder-val="{{ false }}"><button onClick="{{conn.cancel}}" style="padding:9px 14px;border:1px solid #E3E3E3;border-radius:999px;background:#fff;font-size:12.5px;cursor:pointer;color:#1A1A1A">Cancelar</button></sc-if>
+                <sc-if value="{{conn.error}}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;color:#B8003F;line-height:1.4">{{conn.error}}</span></sc-if>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{conn.ok}}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:16px">
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-size:12px;color:#6B6B6B">
+                <div style="display:flex;gap:8px;align-items:center"><span style="width:8px;height:8px;border-radius:50%;background:#12A06B;display:inline-block"></span>Conectado como <b style="color:#1A1A1A">{{conn.user}}</b> · IA: {{conn.aiLabel}}</div>
+                <button onClick="{{conn.edit}}" style="padding:5px 12px;border:1px solid #E3E3E3;border-radius:999px;background:#fff;font-size:11.5px;cursor:pointer;color:#1A1A1A">Alterar conexão</button>
+              </div>
+
+              <div style="border:1px solid #F3C4D6;background:#FFF8FB;border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px">
+                <div style="font-size:13px;font-weight:700">Edição na tela</div>
+                <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Nome no histórico
+                  <input value="{{edition.histName}}" onChange="{{edEd.histName}}" placeholder="{{histDefName}}" style="padding:9px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;color:#1A1A1A;background:#fff">
+                </label>
+                <div style="font-size:12px;color:#6B6B6B;line-height:1.5">{{remoteStatus}}</div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                  <button onClick="{{saveRemote}}" style="padding:9px 16px;border:0;border-radius:999px;background:#EA0356;color:#fff;font-size:12.5px;font-weight:600;cursor:pointer">{{saveRemoteLabel}}</button>
+                  <sc-if value="{{remoteLinked}}" hint-placeholder-val="{{ false }}"><button onClick="{{saveRemoteNew}}" style="padding:9px 16px;border:1px solid #E3E3E3;border-radius:999px;background:#fff;font-size:12.5px;font-weight:600;cursor:pointer;color:#1A1A1A">Salvar como nova</button></sc-if>
+                </div>
+              </div>
+
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+                  <div style="font-size:14px;font-weight:600">{{hlTitle}} <span style="color:#8A8A8A;font-weight:500">· {{hlCount}}</span></div>
+                  <div style="display:flex;gap:6px;align-items:center">
+                    <button onClick="{{hlRefresh}}" style="padding:6px 12px;border:1px solid #E3E3E3;border-radius:999px;background:#fff;font-size:12px;cursor:pointer;color:#1A1A1A">↻ Atualizar</button>
+                    <button onClick="{{hlToggleTrash}}" style="padding:6px 12px;border:1px solid #E3E3E3;border-radius:999px;background:#fff;font-size:12px;cursor:pointer;color:#1A1A1A">{{hlTrashBtn}}</button>
+                  </div>
+                </div>
+                <input value="{{hlQuery}}" onInput="{{hlOnQuery}}" placeholder="Buscar por nome, número ou título de notícia" style="padding:9px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;color:#1A1A1A">
+                <sc-if value="{{hlLoading}}" hint-placeholder-val="{{ false }}"><div style="font-size:12.5px;color:#8A8A8A;padding:10px 0">Carregando histórico…</div></sc-if>
+                <sc-if value="{{hlEmpty}}" hint-placeholder-val="{{ false }}"><div style="padding:22px;border:1.5px dashed #E3E3E3;border-radius:10px;text-align:center;font-size:13px;color:#8A8A8A;line-height:1.6">{{hlEmptyText}}</div></sc-if>
+                <div style="display:flex;flex-direction:column;gap:8px;max-height:560px;overflow:auto">
+                  <sc-for list="{{hlRows}}" as="h" hint-placeholder-count="0">
+                    <div style="display:grid;grid-template-columns:64px minmax(0,1fr);gap:12px;padding:10px;border:1px solid {{h.border}};background:{{h.bg}};border-radius:10px">
+                      <div style="width:64px;height:92px;border-radius:6px;overflow:hidden;background:#001F45;display:flex;align-items:center;justify-content:center">
+                        <sc-if value="{{h.thumb}}" hint-placeholder-val="{{ false }}"><img src="{{h.thumb}}" alt="" style="width:100%;height:100%;object-fit:cover;object-position:top"></sc-if>
+                        <sc-if value="{{h.noThumb}}" hint-placeholder-val="{{ true }}"><div style="font-family:'Open Sans',Arial,sans-serif;font-weight:800;font-stretch:75%;font-size:13px;line-height:.95;color:#14D6E0;text-align:center">#{{h.number}}</div></sc-if>
+                      </div>
+                      <div style="display:flex;flex-direction:column;gap:5px;min-width:0">
+                        <div style="display:flex;gap:8px;align-items:center;min-width:0">
+                          <div style="font-size:13.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{h.name}}</div>
+                          <sc-if value="{{h.current}}" hint-placeholder-val="{{ false }}"><span style="flex:none;font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;background:#EA0356;color:#fff">NA TELA</span></sc-if>
+                        </div>
+                        <div style="font-size:11.5px;color:#6B6B6B;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{h.sub}}</div>
+                        <div style="font-size:11.5px;color:#8A8A8A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{h.titles}}</div>
+                        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:2px">
+                          <sc-if value="{{h.live}}" hint-placeholder-val="{{ true }}">
+                            <div style="display:flex;gap:6px;flex-wrap:wrap">
+                              <button onClick="{{h.onOpen}}" style="padding:5px 12px;border:0;border-radius:999px;background:#1A1A1A;color:#fff;font-size:11.5px;font-weight:600;cursor:pointer">Abrir e editar</button>
+                              <button onClick="{{h.onCopy}}" style="padding:5px 12px;border:1px solid #E3E3E3;border-radius:999px;background:#fff;font-size:11.5px;cursor:pointer;color:#1A1A1A">Duplicar</button>
+                              <button onClick="{{h.onJson}}" style="padding:5px 12px;border:1px solid #E3E3E3;border-radius:999px;background:#fff;font-size:11.5px;cursor:pointer;color:#1A1A1A">Baixar .json</button>
+                              <button onClick="{{h.onTrash}}" style="padding:5px 12px;border:1px solid #E3E3E3;border-radius:999px;background:#fff;font-size:11.5px;cursor:pointer;color:#EA0356">Apagar</button>
+                            </div>
+                          </sc-if>
+                          <sc-if value="{{h.trashed}}" hint-placeholder-val="{{ false }}">
+                            <div style="display:flex;gap:6px;flex-wrap:wrap">
+                              <button onClick="{{h.onRestore}}" style="padding:5px 12px;border:0;border-radius:999px;background:#1A1A1A;color:#fff;font-size:11.5px;font-weight:600;cursor:pointer">Restaurar</button>
+                              <button onClick="{{h.onDelete}}" style="padding:5px 12px;border:1px solid #E3E3E3;border-radius:999px;background:#fff;font-size:11.5px;cursor:pointer;color:#EA0356">Apagar de vez</button>
+                            </div>
+                          </sc-if>
+                        </div>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
       <sc-if value="{{tabMarca}}" hint-placeholder-val="{{ false }}">
         <div style="padding:20px;display:flex;flex-direction:column;gap:18px">
           <div style="font-size:12px;color:#8A8A8A;line-height:1.5">Configuração fixa, reaproveitada em todas as edições.</div>
@@ -292,6 +455,13 @@ input,textarea,select,button{font-family:inherit}
                 <button onClick="{{r.onDel}}" style="width:28px;height:28px;border:1px solid #E3E3E3;border-radius:8px;background:#fff;cursor:pointer;color:#8A8A8A">✕</button>
               </div>
             </sc-for>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:8px;border-top:1px solid #EFEFEF;padding-top:16px">
+            <div style="font-size:13px;font-weight:600">Estilo das imagens geradas com IA</div>
+            <div style="font-size:12px;color:#8A8A8A;line-height:1.5">Instrução enviada junto com cada pedido novo quando “Aplicar estilo Prudential” está marcado no chat de IA.</div>
+            <textarea rows="4" value="{{brand.aiStyle}}" onChange="{{edBrand.aiStyle}}" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:12.5px;line-height:1.5;resize:vertical;color:#1A1A1A"></textarea>
+            <button onClick="{{resetAiStyle}}" style="align-self:flex-start;padding:6px 12px;border:1px solid #E3E3E3;border-radius:999px;background:#fff;font-size:11.5px;cursor:pointer;color:#1A1A1A">Restaurar texto padrão</button>
           </div>
 
           <div style="display:flex;flex-direction:column;gap:8px;border-top:1px solid #EFEFEF;padding-top:16px">
@@ -374,6 +544,18 @@ input,textarea,select,button{font-family:inherit}
                         <div style="position:relative;min-width:150px;padding:7px 30px 7px 26px;border-radius:16px;background:{{c.tabBg}};color:{{c.tabFg}};font-weight:700;font-size:12.5px;text-align:center;box-sizing:border-box;white-space:nowrap">{{c.category}}</div>
                       </div>
                     </sc-if>
+                    <sc-if value="{{c.isBanner}}" hint-placeholder-val="{{ false }}">
+                      <div style="position:relative;overflow:hidden;border-radius:{{c.bannerR}}px;margin:0 {{c.bannerM}}px;background:{{c.imgBg}}">
+                        <sc-if value="{{c.imgSrc}}" hint-placeholder-val="{{ false }}"><img src="{{c.imgSrc}}" alt="" style="display:block;width:100%;height:auto"></sc-if>
+                        <sc-if value="{{c.imgPending}}" hint-placeholder-val="{{ false }}"><div style="height:280px;background:repeating-linear-gradient(45deg,rgba(255,255,255,.18) 0 8px,rgba(255,255,255,.05) 8px 16px),#7E8FA1;display:flex;align-items:center;justify-content:center;font-family:'Open Sans',Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;color:#fff">BANNER PENDENTE</div></sc-if>
+                        <sc-if value="{{c.audience}}" hint-placeholder-val="{{ false }}">
+                          <div style="position:absolute;right:{{c.audR}}px;top:0;bottom:0;display:flex;align-items:{{c.audAlign}};padding:26px 0;box-sizing:border-box;pointer-events:none">
+                            <div style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:10px;line-height:1;font-weight:600;font-style:italic;color:{{c.audColor}};white-space:nowrap;text-shadow:{{c.audShadow}}">{{c.audience}}</div>
+                          </div>
+                        </sc-if>
+                      </div>
+                    </sc-if>
+                    <sc-if value="{{c.isContent}}" hint-placeholder-val="{{ true }}">
                     <div style="position:relative;overflow:hidden;border-radius:24px;background:{{c.bg}};border:{{c.border}};min-height:{{c.minH}}px;display:flex;flex-direction:column;box-sizing:border-box">
                       <sc-if value="{{c.isTop}}" hint-placeholder-val="{{ false }}">
                         <div style="position:relative;height:230px;flex:none;overflow:hidden;background:{{c.imgBg}}">
@@ -387,10 +569,21 @@ input,textarea,select,button{font-family:inherit}
                           <sc-if value="{{c.imgPending}}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(255,255,255,.18) 0 8px,rgba(255,255,255,.05) 8px 16px),#7E8FA1;display:flex;align-items:center;justify-content:center;padding-left:30%;box-sizing:border-box;font-family:'Open Sans',Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;color:#fff;text-align:center">IMAGEM PENDENTE</div></sc-if>
                         </div>
                       </sc-if>
-                      <sc-if value="{{c.dots}}" hint-placeholder-val="{{ false }}">
-                        <div style="position:absolute;top:16px;right:16px;width:96px;height:60px;background-image:radial-gradient(circle,{{c.dotColor}} 1.4px,transparent 1.8px);background-size:12px 12px"></div>
+                      <sc-if value="{{c.isLeft}}" hint-placeholder-val="{{ false }}">
+                        <div style="position:absolute;top:0;left:0;bottom:0;width:47%;overflow:hidden;-webkit-mask-image:linear-gradient(to left,transparent 0,#000 30%);mask-image:linear-gradient(to left,transparent 0,#000 30%);background:{{c.imgBg}}">
+                          <sc-if value="{{c.imgSrc}}" hint-placeholder-val="{{ false }}"><img src="{{c.imgSrc}}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:{{c.fit}};object-position:{{c.fx}}% {{c.fy}}%;transform:scale({{c.zoom}});transform-origin:{{c.fx}}% {{c.fy}}%"></sc-if>
+                          <sc-if value="{{c.imgPending}}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(255,255,255,.18) 0 8px,rgba(255,255,255,.05) 8px 16px),#7E8FA1;display:flex;align-items:center;justify-content:center;padding-right:30%;box-sizing:border-box;font-family:'Open Sans',Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;color:#fff;text-align:center">IMAGEM PENDENTE</div></sc-if>
+                        </div>
                       </sc-if>
-                      <div style="position:relative;display:flex;flex-direction:column;gap:13px;padding:26px 24px 22px;width:{{c.textW}};box-sizing:border-box">
+                      <sc-if value="{{c.dots}}" hint-placeholder-val="{{ false }}">
+                        <div style="position:absolute;top:16px;right:{{c.dotsR}}px;width:96px;height:60px;background-image:radial-gradient(circle,{{c.dotColor}} 1.4px,transparent 1.8px);background-size:12px 12px"></div>
+                      </sc-if>
+                      <sc-if value="{{c.audience}}" hint-placeholder-val="{{ false }}">
+                        <div style="position:absolute;right:{{c.audR}}px;top:0;bottom:0;display:flex;align-items:{{c.audAlign}};padding:26px 0;box-sizing:border-box;pointer-events:none;z-index:2">
+                          <div style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:10px;line-height:1;font-weight:600;font-style:italic;color:{{c.audColor}};white-space:nowrap;text-shadow:{{c.audShadow}}">{{c.audience}}</div>
+                        </div>
+                      </sc-if>
+                      <div style="position:relative;display:flex;flex-direction:column;gap:13px;padding:26px {{c.padR}}px 22px 24px;width:{{c.textW}};margin-left:{{c.textML}};box-sizing:border-box">
                         <div style="font-family:'PruTitle','Open Sans',Arial,sans-serif;font-weight:700;font-stretch:75%;font-size:{{c.titleSize}}px;line-height:.95;letter-spacing:-.005em;text-transform:{{c.tt}};color:{{c.titleColor}};text-wrap:balance;padding-right:{{c.titlePad}}px">
                           <sc-for list="{{c.titleSegs}}" as="s" hint-placeholder-count="1"><span style="color:{{s.c}}">{{s.t}}</span></sc-for>
                         </div>
@@ -401,7 +594,7 @@ input,textarea,select,button{font-family:inherit}
                             </sc-for>
                           </div>
                           <sc-if value="{{c.isCircle}}" hint-placeholder-val="{{ false }}">
-                            <div style="position:relative;width:160px;height:160px;border-radius:50%;overflow:hidden;background:{{c.imgBg}}">
+                            <div style="position:relative;width:160px;height:160px;border-radius:50%;overflow:hidden;background:{{c.imgBg}};order:{{c.circleOrder}}">
                               <sc-if value="{{c.imgSrc}}" hint-placeholder-val="{{ false }}"><img src="{{c.imgSrc}}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:{{c.fit}};object-position:{{c.fx}}% {{c.fy}}%;transform:scale({{c.zoom}});transform-origin:{{c.fx}}% {{c.fy}}%"></sc-if>
                               <sc-if value="{{c.imgPending}}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(255,255,255,.18) 0 8px,rgba(255,255,255,.05) 8px 16px),#7E8FA1;display:flex;align-items:center;justify-content:center;font-family:'Open Sans',Arial,sans-serif;font-size:9px;font-weight:700;letter-spacing:.1em;color:#fff;text-align:center;padding:14px">IMAGEM PENDENTE</div></sc-if>
                             </div>
@@ -452,6 +645,7 @@ input,textarea,select,button{font-family:inherit}
                         <div style="position:relative;margin-top:auto;padding:13px 28px;background:{{c.bandBg}};color:#fff;font-size:12px;line-height:1.3;font-weight:700;text-align:center;text-wrap:balance"><sc-for list="{{c.ctaSegs}}" as="s" hint-placeholder-count="1"><span>{{s.t}}</span></sc-for></div>
                       </sc-if>
                     </div>
+                    </sc-if>
                   </div>
                 </sc-for>
                 <sc-if value="{{noCards}}" hint-placeholder-val="{{ false }}">
@@ -502,6 +696,81 @@ input,textarea,select,button{font-family:inherit}
       </div>
     </div>
   </div>
+
+  <sc-if value="{{ai.open}}" hint-placeholder-val="{{ false }}">
+    <div data-noprint="" onClick="{{ai.onBackdrop}}" style="position:fixed;inset:0;background:rgba(10,18,40,.55);z-index:50;display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box">
+      <div data-aipanel="" style="width:min(820px,100%);height:min(88vh,900px);background:#fff;border-radius:16px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.3)">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:16px 20px;border-bottom:1px solid #EFEFEF">
+          <div style="display:flex;flex-direction:column;gap:3px">
+            <div style="font-size:16px;font-weight:700"><span style="color:#7B3FB0">✦</span> Gerar imagem com IA</div>
+            <div style="font-size:12px;color:#6B6B6B">{{ai.targetLabel}}</div>
+          </div>
+          <button onClick="{{ai.close}}" title="Fechar" style="width:32px;height:32px;border:1px solid #E3E3E3;border-radius:999px;background:#fff;cursor:pointer;font-size:14px;color:#1A1A1A">✕</button>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:14px 20px;align-items:center;padding:12px 20px;border-bottom:1px solid #EFEFEF;font-size:12px">
+          <div style="display:flex;gap:6px;align-items:center"><span style="color:#6B6B6B">Modelo:</span>
+            <sc-for list="{{ai.provOpts}}" as="o" hint-placeholder-count="2"><button onClick="{{o.onClick}}" disabled="{{o.disabled}}" title="{{o.tip}}" style="padding:5px 11px;border-radius:999px;border:1px solid {{o.border}};background:{{o.bg}};color:{{o.color}};font-size:11.5px;cursor:pointer;opacity:{{o.op}}">{{o.label}}</button></sc-for>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center"><span style="color:#6B6B6B">Formato:</span>
+            <sc-for list="{{ai.aspOpts}}" as="o" hint-placeholder-count="4"><button onClick="{{o.onClick}}" style="padding:5px 11px;border-radius:999px;border:1px solid {{o.border}};background:{{o.bg}};color:{{o.color}};font-size:11.5px;cursor:pointer">{{o.label}}</button></sc-for>
+          </div>
+          <sc-if value="{{ai.showQ}}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;gap:6px;align-items:center"><span style="color:#6B6B6B">Qualidade:</span>
+            <sc-for list="{{ai.qOpts}}" as="o" hint-placeholder-count="2"><button onClick="{{o.onClick}}" style="padding:5px 11px;border-radius:999px;border:1px solid {{o.border}};background:{{o.bg}};color:{{o.color}};font-size:11.5px;cursor:pointer">{{o.label}}</button></sc-for>
+          </div>
+          </sc-if>
+          <label style="display:flex;gap:6px;align-items:center;cursor:pointer"><input type="checkbox" checked="{{ai.styleOn}}" onChange="{{ai.onStyle}}"> Aplicar estilo Prudential</label>
+        </div>
+        <div data-aimsgs="" style="flex:1;overflow:auto;padding:18px 20px;display:flex;flex-direction:column;gap:14px;background:#FAFAFB">
+          <sc-if value="{{ai.notReady}}" hint-placeholder-val="{{ false }}">
+            <div style="padding:16px;border-radius:12px;background:#FFF7E8;border:1px solid #F3DDAE;font-size:12.5px;line-height:1.55;color:#5C4300">{{ai.notReadyText}}</div>
+          </sc-if>
+          <sc-if value="{{ai.empty}}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-direction:column;gap:10px;align-items:flex-start;padding:6px 0">
+              <div style="font-size:13px;color:#4A4A4A;line-height:1.55">Descreva a imagem que você quer. Depois, peça ajustes no mesmo chat (“mais clara”, “sem a mesa”, “pessoa sorrindo”) e a IA altera a última imagem gerada.</div>
+              <sc-if value="{{ai.canUseCurrent}}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ai.useCurrent}}" style="padding:7px 13px;border:1px solid #D9C2F0;border-radius:999px;background:#F7F0FF;font-size:12px;cursor:pointer;color:#5B2A86">Partir da imagem atual e pedir ajustes</button>
+              </sc-if>
+              <div style="font-size:11.5px;color:#8A8A8A;margin-top:4px">Sugestões:</div>
+              <sc-for list="{{ai.sugs}}" as="g" hint-placeholder-count="3">
+                <button onClick="{{g.onClick}}" style="text-align:left;padding:8px 12px;border:1px solid #E3E3E3;border-radius:10px;background:#fff;font-size:12px;line-height:1.4;cursor:pointer;color:#1A1A1A">{{g.text}}</button>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-for list="{{ai.msgs}}" as="m" hint-placeholder-count="0">
+            <div style="display:flex;flex-direction:column;align-items:{{m.align}};gap:6px">
+              <sc-if value="{{m.text}}" hint-placeholder-val="{{ false }}"><div style="max-width:78%;padding:9px 13px;border-radius:14px;background:{{m.bubbleBg}};color:{{m.bubbleFg}};font-size:12.5px;line-height:1.5;white-space:pre-wrap">{{m.text}}</div></sc-if>
+              <sc-if value="{{m.error}}" hint-placeholder-val="{{ false }}"><div style="max-width:78%;padding:9px 13px;border-radius:14px;background:#FDECEF;color:#8A0F33;font-size:12.5px;line-height:1.5">{{m.error}}</div></sc-if>
+              <sc-if value="{{m.img}}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-direction:column;gap:8px;max-width:78%;padding:8px;border-radius:14px;background:#fff;border:2px solid {{m.imgBorder}}">
+                  <img src="{{m.img}}" alt="" style="display:block;max-width:100%;max-height:380px;border-radius:8px;object-fit:contain">
+                  <sc-if value="{{m.isAi}}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+                      <button onClick="{{m.onUse}}" style="padding:6px 13px;border:0;border-radius:999px;background:#EA0356;color:#fff;font-size:11.5px;font-weight:600;cursor:pointer">Usar esta imagem</button>
+                      <button onClick="{{m.onBase}}" style="padding:6px 13px;border:1px solid #E3E3E3;border-radius:999px;background:#fff;font-size:11.5px;cursor:pointer;color:#1A1A1A">{{m.baseLabel}}</button>
+                      <button onClick="{{m.onDl}}" style="padding:6px 13px;border:1px solid #E3E3E3;border-radius:999px;background:#fff;font-size:11.5px;cursor:pointer;color:#1A1A1A">Baixar</button>
+                      <span style="font-size:10.5px;color:#8A8A8A">{{m.meta}}</span>
+                    </div>
+                  </sc-if>
+                </div>
+              </sc-if>
+            </div>
+          </sc-for>
+          <sc-if value="{{ai.busy}}" hint-placeholder-val="{{ false }}">
+            <div style="align-self:flex-start;padding:10px 14px;border-radius:14px;background:#F1E9FB;color:#5B2A86;font-size:12.5px">{{ai.busyText}}</div>
+          </sc-if>
+        </div>
+        <div style="padding:12px 20px 16px;border-top:1px solid #EFEFEF;display:flex;flex-direction:column;gap:8px">
+          <sc-if value="{{ai.baseNote}}" hint-placeholder-val="{{ false }}"><div style="font-size:11.5px;color:#6B6B6B">{{ai.baseNote}} <button onClick="{{ai.clearBase}}" style="border:0;background:none;color:#EA0356;font-size:11.5px;cursor:pointer;padding:0 0 0 4px;text-decoration:underline">gerar do zero</button></div></sc-if>
+          <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:end">
+            <textarea rows="3" value="{{ai.input}}" onInput="{{ai.onInput}}" onKeyDown="{{ai.onKey}}" placeholder="{{ai.placeholder}}" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:10px;font-size:13px;line-height:1.45;resize:none;color:#1A1A1A"></textarea>
+            <button onClick="{{ai.send}}" disabled="{{ai.cantSend}}" style="padding:12px 20px;border:0;border-radius:999px;background:#7B3FB0;color:#fff;font-size:13px;font-weight:700;cursor:pointer;opacity:{{ai.sendOp}}">Enviar</button>
+          </div>
+          <div style="font-size:11px;color:#8A8A8A">Ctrl/⌘ + Enter envia. Cada geração pode levar de 10 a 60 segundos e consome crédito da conta da IA.</div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script>
@@ -521,15 +790,20 @@ class Component extends DCLogic {
     {slot:'body',fam:'PruBody',w:400,label:'Gilroy Regular · texto'},
     {slot:'bold',fam:'PruBody',w:700,label:'Gilroy Bold · negrito e abas'}
   ];
+  static AI_STYLE = 'Fotografia realista e corporativa para a comunicação interna de uma seguradora de vida no Brasil. Luz natural, ambiente profissional e acolhedor, pessoas brasileiras diversas e naturais, sem poses forçadas. Paleta com predominância de azul-marinho, azul e tons neutros. Não inclua textos, letras, números, logotipos nem marcas d\'água na imagem.';
+  static H2I = 'https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/+esm';
   static GF = 'https://fonts.googleapis.com/css2?family=Open+Sans:ital,wdth,wght@0,75..100,400..800;1,75..100,400..800&display=swap';
 
-  state = { loaded:false, brand:this.defBrand(), edition:this.defEdition(), cards:[], images:{}, selId:null, tab:'noticias', paste:'', drafts:[], fmt:'png', res:'hi', zoom:0.8, newsH:600, busy:'', toast:'' };
+  state = { loaded:false, brand:this.defBrand(), edition:this.defEdition(), cards:[], images:{}, selId:null, tab:'noticias', paste:'', drafts:[], fmt:'png', res:'hi', zoom:0.8, newsH:600, busy:'', toast:'',
+    conn:this.initConn(), remote:null, savingRemote:false, hl:{items:[],loading:false,trash:false,query:'',loadedAt:0}, thumbs:{},
+    ai:{open:false,key:'',target:'card',cardId:null,provider:'openai',aspect:'landscape',quality:'medium',styleOn:true,input:'',busy:false,msgs:[],baseIdx:-1} };
+  aiSess = {}; _hc = {}; _optim = {};
   hist = []; fut = []; lastKey = null; lastT = 0;
 
-  defBrand(){ return { t1:'CONECTA', t2:'PEM', tagline:'A frequência semanal que\nte **conecta a resultados.**', disclaimer:'Esta News é de uso exclusivo do PEM.\nOs conteúdos destinados aos parceiros\nserão enviados em cards via WhatsApp.', footTag:'A frequência semanal que\nte conecta a resultados.', insta:'@PrudentialParcerias', slogan:'PRO AGORA. PRO AMANHÃ. PRO FUTURO', catColors:{'Campanha de Incentivo':'teal','Produtos':'blue','Operações':'navy','Acontece no PEM':'gold','Marketing':'gold','IWS para o PEM':'violet','Institucional':'violet'}, fonts:{} }; }
-  defEdition(){ return { number:'', date:'', hero:null, hfx:50, hfy:50, hz:1 }; }
+  defBrand(){ return { t1:'CONECTA', t2:'PEM', tagline:'A frequência semanal que\nte **conecta a resultados.**', disclaimer:'Esta News é de uso exclusivo do PEM.\nOs conteúdos destinados aos parceiros\nserão enviados em cards via WhatsApp.', footTag:'A frequência semanal que\nte conecta a resultados.', insta:'@PrudentialParcerias', slogan:'PRO AGORA. PRO AMANHÃ. PRO FUTURO', aiStyle:Component.AI_STYLE, catColors:{'Campanha de Incentivo':'teal','Produtos':'blue','Operações':'navy','Acontece no PEM':'gold','Marketing':'gold','IWS para o PEM':'violet','Institucional':'violet'}, fonts:{} }; }
+  defEdition(){ return { number:'', date:'', hero:null, hfx:50, hfy:50, hz:1, histName:'' }; }
   uid(){ return Math.random().toString(36).slice(2,10); }
-  blankCard(){ return { id:this.uid(), category:'', title:'', titleCase:'upper', body:'', list:'', notice:'', quote:'', author:'', portraitOn:false, portrait:null, cta:'', ctaStyle:'text', validity:'', credit:'', caption:'', hasImage:false, image:null, imgW:0, imgH:0, fx:50, fy:50, zoom:1, fit:'cover', imgLayout:'auto', bg:'auto' }; }
+  blankCard(){ return { id:this.uid(), category:'', title:'', titleCase:'upper', body:'', list:'', notice:'', quote:'', author:'', portraitOn:false, portrait:null, cta:'', ctaStyle:'text', validity:'', credit:'', caption:'', hasImage:false, image:null, imgW:0, imgH:0, fx:50, fy:50, zoom:1, fit:'cover', imgLayout:'auto', bg:'auto', kind:'content', bannerFull:false, audience:'', audiencePos:'center', audienceColor:'auto' }; }
 
   // ---------- storage ----------
   db(){ return this._db || (this._db = new Promise((res,rej)=>{ const r=indexedDB.open('digi-news-prudential',1); r.onupgradeneeded=()=>r.result.createObjectStore('kv'); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); })); }
@@ -539,7 +813,7 @@ class Component extends DCLogic {
     try{
       const [cur,brand]=await Promise.all([this.dbGet('edition'),this.dbGet('brand')]);
       const b={...this.defBrand(),...(brand||{})};
-      this.setState({loaded:true,brand:b,...(cur?{edition:{...this.defEdition(),...cur.edition},cards:cur.cards||[],images:cur.images||{},selId:(cur.cards&&cur.cards[0]&&cur.cards[0].id)||null}:{})});
+      this.setState({loaded:true,brand:b,...(cur?{edition:{...this.defEdition(),...cur.edition},cards:(cur.cards||[]).map(c=>({...this.blankCard(),...c})),images:cur.images||{},remote:cur.remote||null,selId:(cur.cards&&cur.cards[0]&&cur.cards[0].id)||null}:{})});
       this.applyFonts(b.fonts);
     }catch(e){ this.setState({loaded:true}); this.flash('Armazenamento local indisponível: use “Salvar projeto” para não perder o trabalho.'); }
   }
@@ -548,7 +822,7 @@ class Component extends DCLogic {
     clearTimeout(this._sv);
     this._sv=setTimeout(async()=>{
       const s=this.state;
-      try{ await this.dbSet('edition',{cards:s.cards,edition:s.edition,images:this.usedImages(s.cards,s.edition,s.images)}); await this.dbSet('brand',s.brand); }
+      try{ await this.dbSet('edition',{cards:s.cards,edition:s.edition,images:this.usedImages(s.cards,s.edition,s.images),remote:s.remote}); await this.dbSet('brand',s.brand); }
       catch(e){ this.flash('Não foi possível salvar automaticamente. Use “Salvar projeto”.'); }
     },600);
   }
@@ -557,7 +831,9 @@ class Component extends DCLogic {
   // ---------- lifecycle ----------
   componentDidMount(){
     this.load();
-    this.onKey=e=>{ const tag=(document.activeElement&&document.activeElement.tagName)||''; if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='z'&&!['INPUT','TEXTAREA','SELECT'].includes(tag)){ e.preventDefault(); e.shiftKey?this.redo():this.undo(); } };
+    this.autoConnect();
+    this.onKey=e=>{ const tag=(document.activeElement&&document.activeElement.tagName)||''; if(e.key==='Escape'&&this.state.ai.open){ this.closeAI(); return; }
+      if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='z'&&!this.state.ai.open&&!['INPUT','TEXTAREA','SELECT'].includes(tag)){ e.preventDefault(); e.shiftKey?this.redo():this.undo(); } };
     window.addEventListener('keydown',this.onKey);
     if(document.fonts) document.fonts.ready.then(()=>this.measure());
     this.measure();
@@ -566,8 +842,9 @@ class Component extends DCLogic {
   componentDidUpdate(){
     this.measure();
     const s=this.state, p=this._prev||{};
-    if(s.loaded&&(p.cards!==s.cards||p.edition!==s.edition||p.images!==s.images||p.brand!==s.brand)) this.queueSave();
-    this._prev={cards:s.cards,edition:s.edition,images:s.images,brand:s.brand};
+    if(s.loaded&&(p.cards!==s.cards||p.edition!==s.edition||p.images!==s.images||p.brand!==s.brand||p.remote!==s.remote)) this.queueSave();
+    if(s.ai.open&&(p.aiN!==s.ai.msgs.length||p.aiBusy!==s.ai.busy)){ const el=document.querySelector('[data-aimsgs]'); if(el) setTimeout(()=>{ el.scrollTop=el.scrollHeight; },30); }
+    this._prev={cards:s.cards,edition:s.edition,images:s.images,brand:s.brand,remote:s.remote,aiN:s.ai.msgs.length,aiBusy:s.ai.busy};
   }
   measure(){ const el=document.querySelector('[data-newsroot]'); if(!el) return; const h=el.offsetHeight; if(Math.abs(h-this.state.newsH)>1) this.setState({newsH:h}); }
 
@@ -619,7 +896,7 @@ class Component extends DCLogic {
       if(d.app!=='digi-news-prudential'||!Array.isArray(d.cards)) throw new Error('fmt');
       this.hist.push(this.snap());
       const brand=d.brand?{...this.defBrand(),...d.brand}:this.state.brand;
-      this.setState({edition:{...this.defEdition(),...d.edition},cards:d.cards.map(c=>({...this.blankCard(),...c})),images:{...this.state.images,...(d.images||{})},brand,selId:d.cards[0]?d.cards[0].id:null});
+      this.setState({edition:{...this.defEdition(),...d.edition},cards:d.cards.map(c=>({...this.blankCard(),...c})),images:{...this.state.images,...(d.images||{})},brand,remote:null,selId:d.cards[0]?d.cards[0].id:null});
       this.applyFonts(brand.fonts); this.flash('Projeto aberto.');
     }catch(err){ this.flash('Arquivo inválido: selecione um projeto salvo por este gerador.'); }
   }
@@ -627,7 +904,7 @@ class Component extends DCLogic {
     if(this.state.cards.length&&!confirm('Iniciar uma nova edição? As notícias atuais serão removidas (dá para desfazer). Salve o projeto antes se quiser guardá-lo.')) return;
     const n=parseInt(this.state.edition.number,10);
     this.commit({cards:[],selId:null,edition:{...this.defEdition(),number:isNaN(n)?'':String(n+1),date:this.state.edition.date}});
-    this.setState({tab:'noticias'});
+    this.setState({tab:'noticias',remote:null});
   }
 
   // ---------- fonts ----------
@@ -681,7 +958,7 @@ class Component extends DCLogic {
     if(h*ratio>32000){ ratio=Math.floor(32000/h*100)/100; note=` Altura grande: resolução ajustada para ${Math.round(600*ratio)} px de largura.`; }
     this.setState({busy:'Gerando arquivo…'});
     if(document.fonts) await document.fonts.ready;
-    const lib=await import('https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/+esm');
+    const lib=await import(Component.H2I);
     const fontEmbedCSS=await this.embedCSS();
     const opts={pixelRatio:ratio,width:600,height:h,fontEmbedCSS,backgroundColor:'#ffffff',cacheBust:false};
     await lib.toCanvas(node,{...opts,pixelRatio:0.2}).catch(()=>{});
@@ -725,6 +1002,7 @@ class Component extends DCLogic {
   bgAuto(cards){
     const seq=['navy','blue','white','gray']; let k=0, prev=null; const out={};
     cards.forEach(c=>{
+      if(c.kind==='banner'){ out[c.id]='navy'; return; }
       let b;
       if(c.bg!=='auto') b=c.bg;
       else { b=seq[k%seq.length]; if(b===prev){ k++; b=seq[k%seq.length]; } if(c.hasImage&&b==='gray'){ k++; b=seq[k%seq.length]; } k++; }
@@ -739,20 +1017,20 @@ class Component extends DCLogic {
     if(landscape&&len>420) return 'top';
     return 'right';
   }
-  imgLayout(c){ if(!c.hasImage) return 'none'; return c.imgLayout==='auto'?this.autoImgLayout(c):c.imgLayout; }
+  imgLayout(c){ if(c.kind==='banner') return 'banner'; if(!c.hasImage) return 'none'; return c.imgLayout==='auto'?this.autoImgLayout(c):c.imgLayout; }
   tabColor(cat){ const cc=this.state.brand.catColors||{}; if(cc[cat]) return cc[cat]; const keys=['teal','blue','navy','gold','violet']; let h=0; for(const ch of cat) h=(h*31+ch.charCodeAt(0))>>>0; return keys[h%keys.length]; }
-  pendingCount(){ const s=this.state; let n=0; s.cards.forEach(c=>{ if(c.hasImage&&!c.image) n++; if(c.portraitOn&&!c.portrait) n++; }); if(!s.edition.hero) n++; return n; }
+  pendingCount(){ const s=this.state; let n=0; s.cards.forEach(c=>{ if(c.kind==='banner'){ if(!c.image) n++; return; } if(c.hasImage&&!c.image) n++; if(c.portraitOn&&!c.portrait) n++; }); if(!s.edition.hero) n++; return n; }
 
   // ---------- paste ----------
   parsePaste(){
     const txt=this.state.paste||'';
     const blocks=txt.split(/\n\s*-{3,}\s*(?:\n|$)/).map(b=>b.trim()).filter(Boolean);
-    const map=[[/^(se[cç][aã]o|categoria|editoria)$/i,'category'],[/^t[ií]tulo$/i,'title'],[/^(cita[cç][aã]o|depoimento)$/i,'quote'],[/^autor(ia)?$/i,'author'],[/^(chamada|cta)$/i,'cta'],[/^validade$/i,'validity'],[/^legenda$/i,'caption'],[/^(cr[eé]dito|fonte|nota)$/i,'credit'],[/^imagem$/i,'img'],[/^texto$/i,'text']];
+    const map=[[/^(se[cç][aã]o|categoria|editoria)$/i,'category'],[/^t[ií]tulo$/i,'title'],[/^(cita[cç][aã]o|depoimento)$/i,'quote'],[/^autor(ia)?$/i,'author'],[/^(chamada|cta)$/i,'cta'],[/^validade$/i,'validity'],[/^legenda$/i,'caption'],[/^(cr[eé]dito|fonte|nota)$/i,'credit'],[/^imagem$/i,'img'],[/^texto$/i,'text'],[/^p[uú]blicos?( v[aá]lidos)?$/i,'audience']];
     const drafts=blocks.map(b=>{
       const d=this.blankCard(); const body=[]; const list=[];
       b.split('\n').forEach(raw=>{
         const l=raw.trim(); if(!l) return;
-        const m=l.match(/^([A-Za-zÀ-ú ]{3,14}):\s*(.*)$/);
+        const m=l.match(/^([A-Za-zÀ-ú ]{3,18}):\s*(.*)$/);
         if(m){
           const hit=map.find(([re])=>re.test(m[1].trim()));
           if(hit){ const k=hit[1], v=m[2];
@@ -803,6 +1081,272 @@ class Component extends DCLogic {
     this.commit({cards,selId:cards[0]?cards[0].id:null,edition:{...this.state.edition,number:this.state.edition.number||'00',date:this.state.edition.date||'Teste'}});
   }
 
+
+  // ---------- conexão com o servidor ----------
+  lsGet(k){ try{ return localStorage.getItem(k)||''; }catch(e){ return ''; } }
+  lsSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+  cfgUrl(){ const c=window.NEWS_CONFIG||{}; return (c.apiUrl||'').trim().replace(/\/+$/,''); }
+  initConn(){ const url=this.cfgUrl()||this.lsGet('pru.apiUrl'); const key=this.lsGet('pru.teamKey'), user=this.lsGet('pru.user');
+    return { url, key, user, status:null, checking:false, error:'', editing:false, fUrl:url, fKey:key, fUser:user }; }
+  setConn(patch){ this.setState(s=>({conn:{...s.conn,...patch}})); }
+  connOk(){ const c=this.state.conn, st=c.status; return !!(st&&st.ok&&(!st.authRequired||st.authOk)&&c.user&&!c.editing); }
+  async health(url,key){ const r=await fetch(url+'/api/health',{headers:key?{'X-Team-Key':key}:{}}); const j=await r.json(); if(j.app!=='digi-news-prudential') throw new Error('app'); return j; }
+  async autoConnect(){
+    const c=this.state.conn; if(!c.url) return;
+    try{ const st=await this.health(c.url,c.key); this.setConn({status:st, error:st.authRequired&&!st.authOk&&c.key?'A senha da equipe mudou. Informe a nova senha.':''}); if(this.state.tab==='historico') this.loadHist(); }
+    catch(e){ this.setConn({error:'Não foi possível falar com o servidor do histórico agora.'}); }
+  }
+  async connect(){
+    const c=this.state.conn; const url=(this.cfgUrl()||c.fUrl||'').trim().replace(/\/+$/,''); const key=(c.fKey||'').trim(); const user=(c.fUser||'').trim();
+    if(!url) return this.setConn({error:'Informe o endereço do servidor.'});
+    if(!/^https?:\/\//.test(url)) return this.setConn({error:'O endereço precisa começar com https://'});
+    if(!user) return this.setConn({error:'Informe o seu nome.'});
+    this.setConn({checking:true,error:''});
+    try{
+      const st=await this.health(url,key);
+      if(st.authRequired&&!st.authOk) return this.setConn({checking:false,error:'Senha da equipe incorreta.'});
+      if(!this.cfgUrl()) this.lsSet('pru.apiUrl',url); this.lsSet('pru.teamKey',key); this.lsSet('pru.user',user);
+      this.setConn({url,key,user,status:st,checking:false,editing:false,error:''});
+      setTimeout(()=>this.loadHist(),0);
+    }catch(e){ this.setConn({checking:false,error:'Não foi possível falar com o servidor nesse endereço. Confira o link e a internet.'}); }
+  }
+  async api(path,{method='GET',body,headers={},as='json'}={}){
+    const base=this.state.conn.url; if(!base) throw new Error('Servidor não configurado.');
+    const h={...headers}; if(this.state.conn.key) h['X-Team-Key']=this.state.conn.key;
+    let r; try{ r=await fetch(base+'/api'+path,{method,body,headers:h}); }catch(e){ throw new Error('Sem conexão com o servidor. Verifique a internet.'); }
+    if(as==='raw') return r;
+    if(!r.ok){ let j={}; try{ j=await r.json(); }catch(e){}
+      const er=new Error(j.error||`Erro ${r.status} no servidor.`); er.status=r.status; er.data=j;
+      if(r.status===401) this.setConn({status:{...(this.state.conn.status||{}),authOk:false},error:'Senha da equipe incorreta. Informe de novo.'});
+      throw er; }
+    return as==='text'?r.text():r.json();
+  }
+  async pool(arr,n,fn){ const q=[...arr]; const run=async()=>{ while(q.length){ await fn(q.shift()); } }; await Promise.all(Array.from({length:Math.min(n,q.length)},run)); }
+  async sha(str){ const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str)); return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join(''); }
+  fmtDate(iso){ if(!iso) return '—'; try{ return new Date(iso).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}); }catch(e){ return iso; } }
+  plain(t){ return (t||'').replace(/\*\*|==/g,'').replace(/\s+/g,' ').trim(); }
+
+  // ---------- histórico compartilhado ----------
+  histDefName(){ const e=this.state.edition; return `Edição #${(e.number||'').trim()||'—'} · ${(e.date||'').trim()||'sem data'}`; }
+  histMeta(){ const s=this.state, e=s.edition;
+    return { name:(e.histName||'').trim()||this.histDefName(), number:e.number||'', date:e.date||'', cards:s.cards.length,
+      titles:s.cards.filter(c=>c.kind!=='banner'&&c.title).slice(0,3).map(c=>this.plain(c.title)), by:s.conn.user, thumb:true }; }
+  remoteDirty(){ const r=this.state.remote; return !r||this.snap()!==r.snap; }
+  optimistic(meta){ this._optim[meta.id]={...meta,_t:Date.now()}; this.setState(s=>({hl:{...s.hl,items:s.hl.trash?s.hl.items:[meta,...s.hl.items.filter(x=>x.id!==meta.id)]}})); }
+  async loadHist(){
+    if(!this.connOk()) return;
+    const trash=this.state.hl.trash;
+    this.setState(s=>({hl:{...s.hl,loading:true}}));
+    try{
+      const j=await this.api('/news'+(trash?'?trash=1':''));
+      let items=j.items||[];
+      if(!trash){ const now=Date.now();
+        Object.values(this._optim).forEach(o=>{ if(now-o._t>120000) return; const i=items.findIndex(x=>x.id===o.id); if(i<0) items.unshift(o); else if((items[i].version||0)<(o.version||0)) items[i]=o; });
+        items=items.filter(x=>!this.isGone(x.id,'live'));
+        items.sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt))); }
+      else items=items.filter(x=>!this.isGone(x.id,'trash'));
+      if(this.state.hl.trash!==trash) return;
+      this.setState(s=>({hl:{...s.hl,items,loading:false,loadedAt:Date.now()}}));
+      this.loadThumbs(items);
+    }catch(e){ this.setState(s=>({hl:{...s.hl,loading:false}})); this.flash('Não foi possível carregar o histórico: '+e.message); }
+  }
+  async loadThumbs(items){
+    const need=items.filter(it=>it.thumb&&!(this.state.thumbs[it.id]&&this.state.thumbs[it.id].u===it.updatedAt));
+    await this.pool(need,4,async it=>{ try{ const src=await this.api('/thumb/'+it.id,{as:'text'}); if(/^data:image\//.test(src)) this.setState(s=>({thumbs:{...s.thumbs,[it.id]:{u:it.updatedAt,src}}})); }catch(e){} });
+  }
+  async makeThumb(id,u){
+    try{
+      const prev=this.state.selId; await new Promise(r=>this.setState({selId:null},r)); await new Promise(r=>setTimeout(r,40));
+      const node=document.querySelector('[data-newsroot]'); const h=node.offsetHeight;
+      const lib=await import(Component.H2I); const fontEmbedCSS=await this.embedCSS();
+      const cv=await lib.toCanvas(node,{pixelRatio:0.3,width:600,height:h,fontEmbedCSS,backgroundColor:'#ffffff'});
+      this.setState({selId:prev});
+      const c=document.createElement('canvas'); c.width=180; c.height=Math.min(cv.height,260); c.getContext('2d').drawImage(cv,0,0);
+      const src=c.toDataURL('image/jpeg',0.8);
+      this.setState(s=>({thumbs:{...s.thumbs,[id]:{u,src}}}));
+      await this.api('/thumb/'+id,{method:'PUT',body:src,headers:{'Content-Type':'text/plain'}});
+    }catch(e){ console.warn('thumb',e); }
+  }
+  async saveRemote(asNew){
+    if(!this.connOk()){ this.setState({tab:'historico'}); this.flash('Conecte-se ao servidor para salvar no histórico.'); return; }
+    if(this._savingR) return; this._savingR=true; this.setState({savingRemote:true});
+    try{
+      const s=this.state; const imgs=this.usedImages(s.cards,s.edition,s.images); const refs={};
+      for(const k of Object.keys(imgs)) refs[k]=this._hc[k]||(this._hc[k]=await this.sha(imgs[k]));
+      const byHash={}; for(const k in refs) byHash[refs[k]]=imgs[k];
+      const hashes=Object.keys(byHash);
+      if(hashes.length){
+        const {missing}=await this.api('/img/missing',{method:'POST',body:JSON.stringify({hashes}),headers:{'Content-Type':'application/json'}});
+        await this.pool(missing||[],3,h=>this.api('/img/'+h,{method:'PUT',body:byHash[h],headers:{'Content-Type':'text/plain'}}));
+      }
+      const snap=this.snap();
+      const body=JSON.stringify({app:'digi-news-prudential',version:2,edition:s.edition,cards:s.cards,brand:s.brand,imageRefs:refs});
+      const meta=this.histMeta(); const X=m=>({'Content-Type':'application/json','X-Meta':encodeURIComponent(JSON.stringify(m))});
+      const rm=s.remote; let res;
+      if(rm&&rm.id&&!asNew){
+        try{ res=await this.api('/news/'+rm.id,{method:'PUT',body,headers:{...X(meta),'X-Base-Version':String(rm.version||0)}}); }
+        catch(e){
+          if(e.status===409){ const cur=(e.data&&e.data.current)||{};
+            if(confirm(`${cur.by||'Outra pessoa'} salvou uma versão mais nova desta news em ${this.fmtDate(cur.updatedAt)}.\n\nOK: substituir pela sua versão.\nCancelar: manter as duas (a sua é salva como cópia).`)) res=await this.api('/news/'+rm.id,{method:'PUT',body,headers:{...X(meta),'X-Force':'1'}});
+            else res=await this.api('/news',{method:'POST',body,headers:X({...meta,name:meta.name+' (cópia)'})}); }
+          else if(e.status===404) res=await this.api('/news',{method:'POST',body,headers:X(meta)});
+          else throw e;
+        }
+      } else res=await this.api('/news',{method:'POST',body,headers:X(meta)});
+      this.setState({remote:{id:res.id,version:res.version,name:res.name,by:res.by,updatedAt:res.updatedAt,snap}});
+      this.optimistic(res);
+      this.flash(`Salvo no histórico compartilhado como “${res.name}”.`);
+      this._savingR=false; this.setState({savingRemote:false});
+      this.makeThumb(res.id,res.updatedAt);
+    }catch(e){ this._savingR=false; this.setState({savingRemote:false}); this.flash('Não foi possível salvar no histórico: '+e.message); }
+  }
+  async fetchRemote(id){
+    const r=await this.api('/news/'+id,{as:'raw'});
+    if(!r.ok){ let j={}; try{ j=await r.json(); }catch(e){} throw new Error(j.error||`Erro ${r.status}.`); }
+    let meta={}; try{ meta=JSON.parse(decodeURIComponent(r.headers.get('X-Meta')||'')); }catch(e){}
+    const d=await r.json(); const refs=d.imageRefs||{}; const got={};
+    await this.pool([...new Set(Object.values(refs))],4,async h=>{ try{ got[h]=await this.api('/img/'+h,{as:'text'}); }catch(e){} });
+    const images={}; let lost=0;
+    for(const k in refs){ if(got[refs[k]]){ images[k]=got[refs[k]]; this._hc[k]=refs[k]; } else lost++; }
+    return {meta,d,images,lost};
+  }
+  async openRemote(it){
+    const s=this.state;
+    if(s.cards.length&&this.remoteDirty()&&!confirm(`Abrir “${it.name}” substitui a edição que está na tela.\nO que não foi salvo no histórico continua disponível em “Desfazer”. Continuar?`)) return;
+    this.flash('Abrindo do histórico…');
+    try{
+      const {meta,d,images,lost}=await this.fetchRemote(it.id);
+      this.hist.push(this.snap()); this.fut=[];
+      const brand=d.brand?{...this.defBrand(),...d.brand,fonts:{...(s.brand.fonts||{}),...(d.brand.fonts||{})}}:s.brand;
+      const cards=(d.cards||[]).map(c=>({...this.blankCard(),...c})); const edition={...this.defEdition(),...d.edition};
+      this.setState({edition,cards,images:{...this.state.images,...images},brand,selId:cards[0]?cards[0].id:null,tab:'noticias',
+        remote:{id:it.id,version:meta.version||it.version,name:meta.name||it.name,by:meta.by||it.by,updatedAt:meta.updatedAt||it.updatedAt,snap:JSON.stringify({cards,edition})}});
+      this.applyFonts(brand.fonts);
+      this.flash(`“${meta.name||it.name}” aberta. “Salvar no histórico” atualiza essa mesma news.`+(lost?` ${lost} imagem(ns) não foram encontradas no servidor.`:''));
+    }catch(e){ this.flash('Não foi possível abrir: '+e.message); }
+  }
+  async copyRemote(it){
+    try{ const res=await this.api('/news/'+it.id+'/copy',{method:'POST',headers:{'X-Meta':encodeURIComponent(JSON.stringify({by:this.state.conn.user,name:'Cópia de '+it.name}))}});
+      this.optimistic(res); const th=this.state.thumbs[it.id]; if(th) this.setState(s=>({thumbs:{...s.thumbs,[res.id]:{u:res.updatedAt,src:th.src}}}));
+      this.flash(`Cópia criada: “${res.name}”.`); }
+    catch(e){ this.flash('Não foi possível duplicar: '+e.message); }
+  }
+  async jsonRemote(it){
+    try{ this.flash('Preparando arquivo…'); const {d,images}=await this.fetchRemote(it.id);
+      const data={app:'digi-news-prudential',version:1,savedAt:new Date().toISOString(),edition:d.edition,cards:d.cards,images,brand:d.brand};
+      const n=((d.edition&&d.edition.number)||'').trim();
+      this.download(new Blob([JSON.stringify(data)],{type:'application/json'}),'news-conecta-pem'+(n?'-edicao-'+n.replace(/[^\w-]+/g,''):'')+'.json'); this.flash('Arquivo baixado.'); }
+    catch(e){ this.flash('Não foi possível baixar: '+e.message); }
+  }
+  // Esconde por 2 min o item da lista local (o KV pode levar até 60 s para refletir a mudança em todo lugar).
+  gone(id,from){ this._gone=this._gone||{}; this._gone[id]={from,t:Date.now()}; if(from!=='trash') delete this._optim[id]; this.setState(s=>({hl:{...s.hl,items:s.hl.items.filter(x=>x.id!==id)}})); }
+  isGone(id,view){ const g=this._gone&&this._gone[id]; if(!g||Date.now()-g.t>120000) return false; return g.from==='both'||g.from===view; }
+  async trashRemote(it){
+    if(!confirm(`Apagar “${it.name}” do histórico?\nEla vai para a lixeira e pode ser restaurada.`)) return;
+    try{ await this.api('/news/'+it.id+'/trash',{method:'POST'}); this.gone(it.id,'live'); if(this.state.remote&&this.state.remote.id===it.id) this.setState({remote:null}); this.flash('Movida para a lixeira.'); }
+    catch(e){ this.flash('Não foi possível apagar: '+e.message); }
+  }
+  async restoreRemote(it){
+    try{ const res=await this.api('/news/'+it.id+'/restore',{method:'POST'}); this.gone(it.id,'trash'); this._optim[it.id]={...res,_t:Date.now()}; this.flash(`“${it.name}” restaurada.`); }
+    catch(e){ this.flash('Não foi possível restaurar: '+e.message); }
+  }
+  async deleteRemote(it){
+    if(!confirm(`Apagar “${it.name}” de vez?\nIsso não pode ser desfeito.`)) return;
+    try{ await this.api('/news/'+it.id,{method:'DELETE'}); this.gone(it.id,'both'); this.flash('Apagada definitivamente.'); }
+    catch(e){ this.flash('Não foi possível apagar: '+e.message); }
+  }
+
+  // ---------- imagem com IA ----------
+  aiS(key,patch){ this.aiSess[key]={...(this.aiSess[key]||{}),...patch}; if(this.state.ai.key===key) this.setState(s=>({ai:{...s.ai,...patch}})); }
+  openAI(target,id){
+    const key=target==='hero'?'hero':target+':'+id;
+    if(!this.aiSess[key]){
+      const pv=(this.state.conn.status&&this.state.conn.status.providers)||{};
+      let aspect='landscape';
+      if(target==='hero') aspect='square';
+      else if(target==='card'){ const c=this.state.cards.find(x=>x.id===id); const L=c?(c.imgLayout==='auto'?this.autoImgLayout(c):c.imgLayout):'right'; aspect={top:'wide',right:'portrait',left:'portrait',circle:'square',circleLeft:'square'}[L]||'landscape'; }
+      this.aiSess[key]={provider:pv.openai||!pv.gemini?'openai':'gemini',aspect,quality:'medium',styleOn:true,input:'',busy:false,msgs:[],baseIdx:-1};
+    }
+    this.setState({ai:{...this.aiSess[key],open:true,key,target,cardId:id||null}});
+    if(!this.state.conn.status&&this.state.conn.url) this.autoConnect();
+  }
+  closeAI(){ const a=this.state.ai; this.aiSess[a.key]={...(this.aiSess[a.key]||{}),input:a.input}; this.setState(s=>({ai:{...s.ai,open:false}})); }
+  aiTargetImage(){ const a=this.state.ai, s=this.state;
+    if(a.target==='hero') return s.edition.hero?s.images[s.edition.hero]||'':'';
+    const c=s.cards.find(x=>x.id===a.cardId); return c&&c.image?s.images[c.image]||'':''; }
+  aiErr(status,msg,prov){
+    const P=prov==='gemini'?'Gemini':'OpenAI'; msg=String(msg||'');
+    if(status===401&&/senha/i.test(msg)) return msg+' Reconecte na aba Histórico.';
+    if(status===401||(status===400&&/api key|api_key/i.test(msg))) return `A chave da ${P} configurada no servidor foi recusada. Confira o secret no Cloudflare.`;
+    if(status===503) return msg;
+    if(status===429) return `Limite de uso ou de crédito atingido na conta da ${P}. Tente em alguns minutos ou confira o faturamento.`;
+    if(/safety|moderation|blocked|policy|violat/i.test(msg)) return `A ${P} recusou o pedido pelo filtro de segurança. Reformule a descrição (evite marcas, pessoas famosas e temas sensíveis).`;
+    if(status===403&&/verif/i.test(msg)) return 'A organização da OpenAI precisa ser verificada para usar este modelo (platform.openai.com → Settings → Organization).';
+    if(status===404||/not found|does not exist/i.test(msg)) return `Modelo de imagem não encontrado na ${P}. Ajuste o nome do modelo nas variáveis do servidor. Detalhe: ${msg}`;
+    return `${P}: ${msg||'erro '+status}`;
+  }
+  async genOpenAI(prompt,base,aspect,quality){
+    const st=this.state.conn.status||{}; const model=(st.models&&st.models.openai)||'gpt-image-2';
+    const flex=/^gpt-image-2/.test(model);
+    const size={landscape:'1536x1024',portrait:'1024x1536',square:'1024x1024',wide:flex?'1536x864':'1536x1024'}[aspect]||'1536x1024';
+    const q=quality==='high'?'high':'medium'; let r;
+    if(base){
+      const fd=new FormData(); fd.append('model',model); fd.append('prompt',prompt); fd.append('size',size); fd.append('quality',q); fd.append('n','1'); fd.append('output_format','jpeg');
+      const blob=await (await fetch(base)).blob(); fd.append('image[]',blob,'base.'+(/png/.test(blob.type)?'png':/webp/.test(blob.type)?'webp':'jpg'));
+      r=await this.api('/ai/openai/edits',{method:'POST',body:fd,as:'raw'});
+    } else r=await this.api('/ai/openai/generations',{method:'POST',as:'raw',headers:{'Content-Type':'application/json'},body:JSON.stringify({model,prompt,size,quality:q,n:1,output_format:'jpeg'})});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok) throw new Error(this.aiErr(r.status,(j.error&&(j.error.message||j.error))||'','openai'));
+    const d=j.data&&j.data[0]; if(!d||!(d.b64_json||d.url)) throw new Error('A OpenAI não devolveu imagem. Tente de novo.');
+    return {url:d.b64_json?'data:image/jpeg;base64,'+d.b64_json:d.url,model};
+  }
+  async genGemini(prompt,base,aspect){
+    const st=this.state.conn.status||{}; const model=(st.models&&st.models.gemini)||'Gemini';
+    const ar={landscape:'3:2',portrait:'2:3',square:'1:1',wide:'16:9'}[aspect]||'3:2';
+    const parts=[{text:prompt}];
+    if(base){ const m=base.match(/^data:([^;,]+)(?:;[^,]*)?;base64,(.*)$/); if(m) parts.push({inlineData:{mimeType:m[1],data:m[2]}}); }
+    const body={contents:[{role:'user',parts}],generationConfig:{responseModalities:['TEXT','IMAGE'],imageConfig:{aspectRatio:ar}}};
+    const r=await this.api('/ai/gemini',{method:'POST',as:'raw',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok) throw new Error(this.aiErr(r.status,(j.error&&(j.error.message||j.error))||'','gemini'));
+    const cand=(j.candidates||[])[0]; const ps=(cand&&cand.content&&cand.content.parts)||[];
+    const ip=ps.filter(x=>(x.inlineData||x.inline_data)&&!x.thought).pop();
+    const note=ps.filter(x=>x.text&&!x.thought).map(x=>x.text).join(' ').trim();
+    if(!ip){ const why=((j.promptFeedback&&j.promptFeedback.blockReason)||(cand&&cand.finishReason)||'')+'';
+      throw new Error(/SAFETY|PROHIBITED|BLOCK/i.test(why)?'A Gemini recusou o pedido pelo filtro de segurança. Reformule a descrição.':(note?'A Gemini respondeu sem imagem: '+note:'A Gemini não devolveu imagem. Tente reformular o pedido.')); }
+    const d=ip.inlineData||ip.inline_data;
+    return {url:`data:${d.mimeType||d.mime_type||'image/png'};base64,${d.data}`,note,model};
+  }
+  async sendAI(override){
+    const a=this.state.ai; const key=a.key; const text=String(override!=null?override:a.input).trim();
+    if(!text||a.busy) return;
+    if(!this.connOk()){ this.flash('Conecte-se ao servidor na aba Histórico para usar a IA.'); return; }
+    const base=a.baseIdx>=0&&a.msgs[a.baseIdx]?a.msgs[a.baseIdx].img:'';
+    const msgs=[...a.msgs,{role:'user',text}];
+    this.aiS(key,{msgs,input:'',busy:true});
+    const style=a.styleOn?(this.state.brand.aiStyle||Component.AI_STYLE):'';
+    const prompt=base
+      ?`Edite a imagem enviada seguindo este pedido: ${text}\nMantenha todo o resto como está (pessoas, cenário, composição, luz e enquadramento) e mude apenas o que foi pedido.${a.styleOn?' Não inclua textos, letras, logotipos nem marcas d\'água.':''}`
+      :(style?style+'\n\n':'')+'Descrição da imagem: '+text;
+    try{
+      const out=a.provider==='gemini'?await this.genGemini(prompt,base,a.aspect):await this.genOpenAI(prompt,base,a.aspect,a.quality);
+      const cur=this.aiSess[key].msgs; const m2=[...cur,{role:'ai',img:out.url,note:out.note||'',provider:a.provider,model:out.model,aspect:a.aspect}];
+      this.aiS(key,{msgs:m2,busy:false,baseIdx:m2.length-1});
+    }catch(e){ const cur=this.aiSess[key].msgs; this.aiS(key,{msgs:[...cur,{role:'ai',error:e.message||String(e)}],busy:false}); }
+  }
+  async useAIImage(i){
+    const a=this.state.ai; const m=a.msgs[i]; if(!m||!m.img) return;
+    try{
+      const blob=await (await fetch(m.img)).blob(); const type=blob.type||'image/jpeg';
+      const r=await this.readImage(new File([blob],'ia.'+(type.split('/')[1]||'jpg'),{type}));
+      const key='img_'+this.uid(); this.setState(s=>({images:{...s.images,[key]:r.url}}));
+      if(a.target==='hero') this.updEdition({hero:key,hfx:50,hfy:50,hz:1});
+      else if(a.target==='banner') this.updCard(a.cardId,{image:key,imgW:r.w,imgH:r.h});
+      else this.updCard(a.cardId,{image:key,imgW:r.w,imgH:r.h,hasImage:true,fx:50,fy:50,zoom:1});
+      this.closeAI(); this.flash('Imagem gerada com IA aplicada. Ajuste o enquadramento nos controles, se precisar.');
+    }catch(e){ this.flash('Não foi possível aplicar a imagem.'); }
+  }
+  dlAIImage(i){ const m=this.state.ai.msgs[i]; if(!m||!m.img) return; fetch(m.img).then(r=>r.blob()).then(b=>this.download(b,`imagem-ia-${Date.now()}.${(b.type.split('/')[1]||'jpg').replace('jpeg','jpg')}`)); }
   select(id){
     this.setState({selId:id,tab:'noticias'});
     setTimeout(()=>{ const sc=document.querySelector('[data-scroller]'); const el=document.querySelector(`[data-card-id="${id}"]`); if(sc&&el){ const top=el.getBoundingClientRect().top-sc.getBoundingClientRect().top+sc.scrollTop-30; sc.scrollTo({top,behavior:'smooth'}); } },30);
@@ -824,17 +1368,26 @@ class Component extends DCLogic {
       const ctaOn=!!(c.cta||'').trim();
       const hasQuote=!!(c.quote||'').trim();
       const portraitSrc=c.portraitOn&&c.portrait?s.images[c.portrait]:'';
+      const isBanner=c.kind==='banner', side=L==='right'||L==='left', circ=L==='circle'||L==='circleLeft';
+      const aud=(c.audience||'').trim();
+      const overImg=isBanner||L==='right';
+      const AC={white:'#fff',navy:'#001F45',blue:'#007BC3'};
+      const audColor=AC[c.audienceColor]||(overImg?'#fff':(P.dark||bgMap[c.id]==='gray'?'#fff':'#007BC3'));
+      const audShadow=overImg&&audColor==='#fff'?'0 1px 3px rgba(0,31,69,.55)':'none';
       return {
+        isBanner, isContent:!isBanner, bannerR:c.bannerFull?0:24, bannerM:c.bannerFull?-22:0,
+        audience:aud, audR:isBanner&&c.bannerFull?16:10, audAlign:{top:'flex-start',bottom:'flex-end'}[c.audiencePos]||'center', audColor, audShadow,
+        isLeft:L==='left', textML:L==='left'?'auto':'0', padR:aud&&L!=='right'?34:24, dotsR:aud?30:16, circleOrder:L==='circleLeft'?-1:0,
         id:c.id, category:c.category, tabShow, tabBg:t.bg, tabFg:t.fg, mt:tabShow&&i>0?16:0,
         onSel:()=>this.select(c.id), outline:c.id===s.selId?'2px solid #EA0356':'none',
         bg:P.bg, border:P.border, titleColor:P.title, bodyColor:P.body, muted:P.muted, accent:P.accent, imgBg:P.imgBg,
-        isTop:L==='top', isRight:L==='right', isCircle:L==='circle',
-        imgSrc:src||'', imgPending:c.hasImage&&!src, fit:c.fit||'cover', fx:c.fx??50, fy:c.fy??50, zoom:c.zoom??1,
+        isTop:L==='top', isRight:L==='right', isCircle:circ,
+        imgSrc:src||'', imgPending:(c.hasImage||isBanner)&&!src, fit:c.fit||'cover', fx:c.fx??50, fy:c.fy??50, zoom:c.zoom??1,
         dots:L==='none'&&!hasQuote, dotColor:P.dot,
-        textW:L==='right'?'58%':'100%', minH:L==='right'?260:0,
-        titleSize:L==='right'?21:23, titlePad:L==='none'&&!hasQuote?90:0, tt:c.titleCase==='mixed'?'none':'uppercase',
+        textW:side?'58%':'100%', minH:Math.max(side?260:0,aud?Math.ceil(aud.length*4.8)+56:0),
+        titleSize:side?21:23, titlePad:L==='none'&&!hasQuote?90:0, tt:c.titleCase==='mixed'?'none':'uppercase',
         titleSegs:this.segs(c.title||'Sem título',P.title,P.hl,700),
-        bodyCols:L==='circle'?'minmax(0,1fr) 160px':'minmax(0,1fr)',
+        bodyCols:L==='circle'?'minmax(0,1fr) 160px':L==='circleLeft'?'160px minmax(0,1fr)':'minmax(0,1fr)',
         paras:this.lines(c.body).map(p=>({segs:this.segs(p,P.body,P.hl,400)})),
         hasList:!!this.lines(c.list).length, list:this.lines(c.list).map(l=>({segs:this.labelSegs(l,P.body,P.hl)})),
         hasNotice:!!(c.notice||'').trim(), noticeSegs:this.labelSegs((c.notice||'').trim(),P.dark?'#001F45':'#fff',P.dark?'#007BC3':'#14D6E0'),
@@ -843,7 +1396,7 @@ class Component extends DCLogic {
         quoteCols:c.portraitOn?'40px minmax(0,1fr) 120px':'40px minmax(0,1fr)',
         cta:c.cta, ctaSegs:this.segs(c.cta,P.body,P.hl,700), ctaText:ctaOn&&c.ctaStyle==='text', ctaButton:ctaOn&&c.ctaStyle==='button', ctaBand:ctaOn&&c.ctaStyle==='band',
         btnBg:P.dark?'#fff':'#007BC3', btnFg:P.dark?'#001F45':'#fff', bandBg:P.band,
-        caption:c.hasImage?(c.caption||''):'', credit:c.credit||'', validity:c.validity||''
+        caption:c.hasImage&&!isBanner?(c.caption||''):'', credit:c.credit||'', validity:c.validity||''
       };
     });
 
@@ -852,14 +1405,15 @@ class Component extends DCLogic {
     if(!s.edition.hero) warnings.push({text:'Foto de capa do cabeçalho pendente (aba Edição).',onClick:()=>this.setState({tab:'edicao'})});
     s.cards.forEach((c,i)=>{
       const nm=`Notícia ${i+1}`; const go=()=>this.select(c.id);
+      if(c.kind==='banner'){ if(!c.image) warnings.push({text:`${nm}: banner sem imagem.`,onClick:go}); return; }
       if(!(c.title||'').trim()) warnings.push({text:`${nm}: sem título.`,onClick:go});
       if(!(c.category||'').trim()) warnings.push({text:`${nm}: sem seção definida (fica sem aba).`,onClick:go});
       if(c.hasImage&&!c.image) warnings.push({text:`${nm}: imagem indicada e ainda não enviada.`,onClick:go});
       if(c.portraitOn&&!c.portrait) warnings.push({text:`${nm}: foto do autor da citação pendente.`,onClick:go});
       const len=(c.body||'').length+(c.list||'').length;
       if(len>1900) warnings.push({text:`${nm}: texto muito extenso para um card (${len} caracteres). Avalie dividir em dois cards, mantendo a redação.`,onClick:go});
-      if(this.imgLayout(c)==='right'&&len>900) warnings.push({text:`${nm}: texto longo com imagem lateral; a imagem ficará muito recortada. Prefira “Faixa no topo”.`,onClick:go});
-      if(this.imgLayout(c)==='circle'&&c.portraitOn) warnings.push({text:`${nm}: imagem em círculo e foto do autor no mesmo card; revise o equilíbrio.`,onClick:go});
+      if((this.imgLayout(c)==='right'||this.imgLayout(c)==='left')&&len>900) warnings.push({text:`${nm}: texto longo com imagem lateral; a imagem ficará muito recortada. Prefira “Faixa no topo”.`,onClick:go});
+      if((this.imgLayout(c)==='circle'||this.imgLayout(c)==='circleLeft')&&c.portraitOn) warnings.push({text:`${nm}: imagem em círculo e foto do autor no mesmo card; revise o equilíbrio.`,onClick:go});
     });
     if(s.newsH*2742/600>32000) warnings.push({text:`Edição muito longa (${s.newsH}px). A exportação em alta será reduzida automaticamente; considere dividir.`,onClick:()=>{}});
 
@@ -868,14 +1422,16 @@ class Component extends DCLogic {
     const blank=this.blankCard();
     const sc=sel||blank;
     const ex=[]; if(this.lines(sc.list).length) ex.push('lista'); if((sc.notice||'').trim()) ex.push('aviso'); if((sc.quote||'').trim()) ex.push('citação'); if((sc.cta||'').trim()) ex.push('chamada'); if(sc.validity) ex.push('validade'); if(sc.credit) ex.push('crédito');
-    const IL={top:'faixa no topo',right:'lateral direita',circle:'círculo'};
+    const IL={top:'faixa no topo',right:'lateral direita',left:'lateral esquerda',circle:'círculo',circleLeft:'círculo à esquerda'};
     const selImg=sc.image?s.images[sc.image]:'';
-    const selV={...sc, n:selIdx+1, bgAuto:Component.BGNAME[bgMap[sc.id]||'navy']||'', imgAuto:IL[this.autoImgLayout(sc)], imgSrc:selImg||'', imgMissing:sc.hasImage&&!selImg, imgBtn:selImg?'Substituir imagem':'Enviar imagem', zoomPct:Math.round((sc.zoom||1)*100), zoomLabel:Math.round((sc.zoom||1)*100)+'%', contain:sc.fit==='contain', portraitSrc:sc.portrait?(s.images[sc.portrait]||''):'', portraitBtn:sc.portrait?'Substituir foto':'Enviar foto', extrasSummary:ex.length?'· '+ex.join(', '):'· nenhum'};
+    const selV={...sc, n:selIdx+1, bgAuto:Component.BGNAME[bgMap[sc.id]||'navy']||'', imgAuto:IL[this.autoImgLayout(sc)], imgSrc:selImg||'', imgMissing:sc.hasImage&&!selImg, imgBtn:selImg?'Substituir imagem':'Enviar imagem', zoomPct:Math.round((sc.zoom||1)*100), zoomLabel:Math.round((sc.zoom||1)*100)+'%', contain:sc.fit==='contain', portraitSrc:sc.portrait?(s.images[sc.portrait]||''):'', portraitBtn:sc.portrait?'Substituir foto':'Enviar foto', isBanner:sc.kind==='banner', isContent:sc.kind!=='banner', bannerMissing:!selImg, bannerBtn:selImg?'Substituir banner':'Enviar banner', audiencePos:sc.audiencePos||'center', audienceColor:sc.audienceColor||'auto', extrasSummary:ex.length?'· '+ex.join(', '):'· nenhum'};
     const id=sc.id;
     const tx=k=>e=>this.updCard(id,{[k]:e.target.value},id+k);
     const ed={
-      category:tx('category'),title:tx('title'),body:tx('body'),list:tx('list'),notice:tx('notice'),quote:tx('quote'),author:tx('author'),cta:tx('cta'),validity:tx('validity'),credit:tx('credit'),caption:tx('caption'),
-      bg:e=>this.updCard(id,{bg:e.target.value}), ctaStyle:e=>this.updCard(id,{ctaStyle:e.target.value}), imgLayout:e=>this.updCard(id,{imgLayout:e.target.value}),
+      category:tx('category'),audience:tx('audience'),title:tx('title'),body:tx('body'),list:tx('list'),notice:tx('notice'),quote:tx('quote'),author:tx('author'),cta:tx('cta'),validity:tx('validity'),credit:tx('credit'),caption:tx('caption'),
+      bg:e=>this.updCard(id,{bg:e.target.value}), audiencePos:e=>this.updCard(id,{audiencePos:e.target.value}), audienceColor:e=>this.updCard(id,{audienceColor:e.target.value}),
+      banner:async e=>{ const r=await this.storeImage(e); if(r) this.updCard(id,{image:r.key,imgW:r.w,imgH:r.h}); },
+      aiImage:()=>this.openAI(sc.kind==='banner'?'banner':'card',id), ctaStyle:e=>this.updCard(id,{ctaStyle:e.target.value}), imgLayout:e=>this.updCard(id,{imgLayout:e.target.value}),
       hasImage:e=>this.updCard(id,{hasImage:e.target.checked}), portraitOn:e=>this.updCard(id,{portraitOn:e.target.checked}),
       contain:e=>this.updCard(id,{fit:e.target.checked?'contain':'cover'}),
       fx:e=>this.updCard(id,{fx:+e.target.value},id+'fx'), fy:e=>this.updCard(id,{fy:+e.target.value},id+'fy'), zoom:e=>this.updCard(id,{zoom:+e.target.value/100},id+'z'),
@@ -883,10 +1439,12 @@ class Component extends DCLogic {
       portrait:async e=>{ const r=await this.storeImage(e); if(r) this.updCard(id,{portrait:r.key,portraitOn:true}); },
       removeImage:()=>this.updCard(id,{image:null,imgW:0,imgH:0})
     };
+    const kindOpts=[['content','Notícia com texto'],['banner','Banner pronto · imagem 100%']].map(([v,l])=>({label:l,onClick:()=>this.updCard(id,{kind:v}),...pill((sc.kind||'content')===v)}));
+    const bannerOpts=[[false,'Dentro da margem, cantos arredondados'],[true,'Largura total da news']].map(([v,l])=>({label:l,onClick:()=>this.updCard(id,{bannerFull:v}),...pill(!!sc.bannerFull===v)}));
     const caseOpts=[['upper','CAIXA-ALTA'],['mixed','Caixa alta e baixa']].map(([v,l])=>({label:l,onClick:()=>this.updCard(id,{titleCase:v}),...pill(sc.titleCase===v)}));
 
-    const cardList=s.cards.map((c,i)=>{ const t=TB[this.tabColor(c.category)]; const on=c.id===s.selId; const has=c.hasImage; const ok=has&&c.image;
-      return {n:i+1,label:(c.title||'Sem título').replace(/\*\*|==/g,''),cat:c.category||'Sem seção',catBg:c.category?t.bg:'#EFEFEF',catFg:c.category?t.fg:'#6B6B6B',imgBadge:has?(ok?'Com imagem':'Imagem pendente'):'Sem imagem',imgBg:has?(ok?'#E8F6EF':'#FFF3D6'):'#F2F2F2',imgFg:has?(ok?'#0B6B44':'#7A5300'):'#6B6B6B',border:on?'#EA0356':'#EDEDED',bg:on?'#FFF5F8':'#fff',
+    const cardList=s.cards.map((c,i)=>{ const t=TB[this.tabColor(c.category)]; const on=c.id===s.selId; const bn=c.kind==='banner'; const has=c.hasImage||bn; const ok=has&&c.image;
+      return {n:i+1,label:bn?(c.title||'Banner pronto').replace(/\*\*|==/g,''):(c.title||'Sem título').replace(/\*\*|==/g,''),cat:c.category||'Sem seção',catBg:c.category?t.bg:'#EFEFEF',catFg:c.category?t.fg:'#6B6B6B',imgBadge:bn?(ok?'Banner':'Banner pendente'):has?(ok?'Com imagem':'Imagem pendente'):'Sem imagem',imgBg:has?(ok?'#E8F6EF':'#FFF3D6'):'#F2F2F2',imgFg:has?(ok?'#0B6B44':'#7A5300'):'#6B6B6B',border:on?'#EA0356':'#EDEDED',bg:on?'#FFF5F8':'#fff',
         onSel:()=>this.select(c.id), onUp:e=>{e.stopPropagation();this.move(i,-1);}, onDown:e=>{e.stopPropagation();this.move(i,1);},
         onDup:e=>{e.stopPropagation(); const a=[...s.cards]; const cp={...c,id:this.uid()}; a.splice(i+1,0,cp); this.commit({cards:a,selId:cp.id});},
         onDel:e=>{e.stopPropagation(); if(!confirm(`Excluir “${(c.title||'Sem título').replace(/\*\*|==/g,'')}”? (dá para desfazer)`)) return; const a=s.cards.filter(x=>x.id!==c.id); this.commit({cards:a,selId:s.selId===c.id?(a[i]||a[i-1]||{}).id||null:s.selId});}};
@@ -898,7 +1456,7 @@ class Component extends DCLogic {
       onDel:()=>{ const cc={...s.brand.catColors}; delete cc[name]; this.updBrand({catColors:cc}); }}; });
     const fontRows=Component.FONTS.map(f=>{ const up=s.brand.fonts&&s.brand.fonts[f.slot]; return {label:f.label,status:up?'Enviada: '+up.name:'Usando Open Sans (substituta)',stColor:up?'#0B6B44':'#8A8A8A',onFile:e=>this.onFont(f.slot,e)}; });
 
-    const tabs=[['noticias','Notícias'],['edicao','Edição'],['colar','Colar texto'],['marca','Marca e testes']].map(([k,l])=>({label:l,onClick:()=>this.setState({tab:k}),color:s.tab===k?'#EA0356':'#6B6B6B',weight:s.tab===k?600:500,line:s.tab===k?'#EA0356':'transparent'}));
+    const tabs=[['noticias','Notícias'],['edicao','Edição'],['colar','Colar texto'],['historico','Histórico'],['marca','Marca e testes']].map(([k,l])=>({label:l,onClick:()=>{ this.setState({tab:k}); if(k==='historico'&&Date.now()-s.hl.loadedAt>15000) setTimeout(()=>this.loadHist(),0); },color:s.tab===k?'#EA0356':'#6B6B6B',weight:s.tab===k?600:500,line:s.tab===k?'#EA0356':'transparent'}));
     const fmts=[['png','PNG'],['jpg','JPG'],['pdf','PDF'],['json','Projeto']].map(([k,l])=>({label:l,onClick:()=>this.setState({fmt:k}),...pill(s.fmt===k)}));
     const hints={png:'Imagem única da edição completa, sem compressão. Ideal para envio e aprovação.',jpg:'Imagem única mais leve, para e-mail e WhatsApp.',pdf:'PDF vetorial de página única: textos nítidos e selecionáveis. Abre no Illustrator para ajustes finos.',json:'Arquivo do projeto com textos, imagens e ajustes, para reabrir e continuar a edição no gerador.'};
     const resOpts=[['std','Padrão · 1200 px'],['hi','Alta · 2742 px']].map(([k,l])=>({label:l,onClick:()=>this.setState({res:k}),...pill(s.res===k)}));
@@ -909,18 +1467,89 @@ class Component extends DCLogic {
       number:e=>this.updEdition({number:e.target.value},'num'), date:e=>this.updEdition({date:e.target.value},'date'),
       hfx:e=>this.updEdition({hfx:+e.target.value},'hfx'), hfy:e=>this.updEdition({hfy:+e.target.value},'hfy'), hz:e=>this.updEdition({hz:+e.target.value/100},'hz'),
       hero:async e=>{ const r=await this.storeImage(e); if(r) this.updEdition({hero:r.key,hfx:50,hfy:50,hz:1}); },
-      removeHero:()=>this.updEdition({hero:null})
+      removeHero:()=>this.updEdition({hero:null}), histName:e=>this.updEdition({histName:e.target.value},'hn'),
+      aiHero:()=>this.openAI('hero')
     };
     const bk=k=>e=>this.updBrand({[k]:e.target.value});
-    const edBrand={t1:bk('t1'),t2:bk('t2'),tagline:bk('tagline'),disclaimer:bk('disclaimer'),insta:bk('insta'),slogan:bk('slogan'),footTag:bk('footTag')};
-    const drafts=s.drafts.map((d,i)=>{ const x=[]; if(d.list) x.push('lista'); if(d.notice) x.push('aviso'); if(d.quote) x.push('citação'); if(d.author) x.push('autor'); if(d.cta) x.push('chamada'); if(d.validity) x.push('validade'); if(d.caption) x.push('legenda'); if(d.credit) x.push('crédito');
+    const edBrand={aiStyle:bk('aiStyle'),t1:bk('t1'),t2:bk('t2'),tagline:bk('tagline'),disclaimer:bk('disclaimer'),insta:bk('insta'),slogan:bk('slogan'),footTag:bk('footTag')};
+    const drafts=s.drafts.map((d,i)=>{ const x=[]; if(d.list) x.push('lista'); if(d.notice) x.push('aviso'); if(d.quote) x.push('citação'); if(d.author) x.push('autor'); if(d.cta) x.push('chamada'); if(d.validity) x.push('validade'); if(d.caption) x.push('legenda'); if(d.credit) x.push('crédito'); if(d.audience) x.push('públicos válidos');
       return {...d,n:i+1,extras:x.join(', '),onCat:e=>this.updDraft(i,{category:e.target.value}),onTitle:e=>this.updDraft(i,{title:e.target.value}),onBody:e=>this.updDraft(i,{body:e.target.value}),onImg:e=>this.updDraft(i,{hasImage:e.target.checked}),onDel:()=>this.setState(st=>({drafts:st.drafts.filter((_,k)=>k!==i)}))}; });
 
+
+    // ---- conexão / histórico ----
+    const cn=s.conn, st=cn.status||{}, ok=this.connOk();
+    const pv=st.providers||{};
+    const conn={ ok, showForm:!ok, askUrl:!this.cfgUrl(), fUrl:cn.fUrl, fKey:cn.fKey, fUser:cn.fUser, error:cn.error, user:cn.user,
+      btn:cn.checking?'Conectando…':'Conectar', canCancel:cn.editing,
+      aiLabel:[pv.openai&&'OpenAI',pv.gemini&&'Gemini'].filter(Boolean).join(' e ')||'nenhuma chave configurada',
+      onUrl:e=>this.setConn({fUrl:e.target.value}), onKey:e=>this.setConn({fKey:e.target.value}), onUser:e=>this.setConn({fUser:e.target.value}),
+      onEnter:e=>{ if(e.key==='Enter') this.connect(); }, connect:()=>this.connect(),
+      edit:()=>this.setConn({editing:true,fUrl:cn.url,fKey:cn.key,fUser:cn.user,error:''}), cancel:()=>this.setConn({editing:false,error:''}) };
+    const rm=s.remote, dirty=this.remoteDirty();
+    const remoteStatus=!rm?'Ainda não está no histórico. Salve para que a equipe veja, copie e edite.'
+      :`Vinculada a “${rm.name}” · versão ${rm.version} · salva por ${rm.by||'—'} em ${this.fmtDate(rm.updatedAt)}. `+(dirty?'Há alterações ainda não salvas no histórico.':'Nenhuma alteração pendente.');
+    const q=(s.hl.query||'').toLowerCase().trim();
+    const hlRows=s.hl.items.filter(it=>!q||[it.name,it.number,it.date,it.by,...(it.titles||[])].join(' ').toLowerCase().includes(q)).map(it=>{
+      const cur=rm&&rm.id===it.id; const th=s.thumbs[it.id];
+      return { name:it.name||'Sem nome', number:it.number||'—', thumb:th?th.src:'', noThumb:!th, current:!!cur&&!s.hl.trash,
+        sub:s.hl.trash?`Apagada em ${this.fmtDate(it.deleted)} · ${it.cards} notícia(s)`:`${it.cards} notícia(s) · atualizada por ${it.by||'—'} em ${this.fmtDate(it.updatedAt)}`,
+        titles:(it.titles||[]).join(' · ')||'Sem títulos', live:!s.hl.trash, trashed:s.hl.trash,
+        border:cur?'#EA0356':'#EDEDED', bg:cur?'#FFF5F8':'#fff',
+        onOpen:()=>this.openRemote(it), onCopy:()=>this.copyRemote(it), onJson:()=>this.jsonRemote(it), onTrash:()=>this.trashRemote(it),
+        onRestore:()=>this.restoreRemote(it), onDelete:()=>this.deleteRemote(it) }; });
+    const remoteVals={
+      conn, remoteOn:ok, remoteStatus, remoteLinked:!!rm, histDefName:this.histDefName(),
+      saveRemote:()=>this.saveRemote(false), saveRemoteNew:()=>this.saveRemote(true),
+      saveRemoteLabel:s.savingRemote?'Salvando…':rm?'Salvar alterações no histórico':'Salvar no histórico',
+      remoteLabel:s.savingRemote?'Salvando…':dirty?'● Salvar no histórico':'✓ Salvo no histórico',
+      remoteTip:rm?`Histórico: ${rm.name} (versão ${rm.version})`:'Salvar esta edição no histórico compartilhado',
+      remoteBorder:dirty?'#EA0356':'#CDEBDD', remoteBg:dirty?'#FFF5F8':'#F1FAF5', remoteFg:dirty?'#EA0356':'#0B6B44',
+      tabHist:s.tab==='historico', hlTitle:s.hl.trash?'Lixeira':'Histórico compartilhado', hlCount:hlRows.length, hlRows,
+      hlLoading:s.hl.loading&&!s.hl.items.length, hlEmpty:!s.hl.loading&&!hlRows.length,
+      hlEmptyText:q?'Nada encontrado com essa busca.':s.hl.trash?'A lixeira está vazia.':'Nenhuma news no histórico ainda. Salve a edição na tela para começar.',
+      hlQuery:s.hl.query, hlOnQuery:e=>{ const v=e.target.value; this.setState(x=>({hl:{...x.hl,query:v}})); },
+      hlRefresh:()=>this.loadHist(), hlTrashBtn:s.hl.trash?'← Voltar ao histórico':'🗑 Lixeira',
+      hlToggleTrash:()=>{ this.setState(x=>({hl:{...x.hl,trash:!x.hl.trash,items:[]}})); setTimeout(()=>this.loadHist(),0); },
+      resetAiStyle:()=>this.updBrand({aiStyle:Component.AI_STYLE})
+    };
+
+    // ---- chat de IA ----
+    const a=s.ai; const PN={openai:'OpenAI',gemini:'Gemini'}; const AN={landscape:'3:2',portrait:'2:3',square:'1:1',wide:'16:9'};
+    const aiReady=ok&&(pv.openai||pv.gemini);
+    let targetLabel='Para a foto de capa (círculo do cabeçalho)';
+    if(a.target!=='hero'){ const ci=s.cards.findIndex(c=>c.id===a.cardId); const cc=s.cards[ci];
+      targetLabel=a.target==='banner'?`Banner da notícia ${ci+1}`:`Para a notícia ${ci+1}: “${cc?this.plain(cc.title)||'Sem título':''}”`; }
+    const sg=a.target==='hero'
+      ?['Consultora sorridente em escritório moderno e claro, olhando para a câmera, fundo desfocado','Casal maduro conversando com um corretor na sala de casa, clima de confiança','Equipe diversa reunida em volta de uma mesa, celebrando um resultado']
+      :['Corretor conversando com um casal em uma sala de reunião clara, clima de confiança','Família brasileira em casa, momento de cuidado e proteção, luz natural da manhã','Mãos assinando um documento sobre a mesa, notebook ao lado, tons de azul'];
+    const pillA=(on)=>({border:on?'#7B3FB0':'#E3E3E3',bg:on?'#7B3FB0':'#fff',color:on?'#fff':'#1A1A1A'});
+    const hasBase=a.baseIdx>=0&&a.msgs[a.baseIdx]&&a.msgs[a.baseIdx].img;
+    const ai={ open:a.open, targetLabel, busy:a.busy, busyText:`Gerando com ${PN[a.provider]}… pode levar até 1 minuto.`,
+      close:()=>this.closeAI(), onBackdrop:e=>{ if(e.target===e.currentTarget) this.closeAI(); },
+      notReady:!aiReady, notReadyText:!ok?'Para gerar imagens, conecte-se primeiro ao servidor na aba Histórico (senha da equipe e seu nome).':'O servidor não tem nenhuma chave de IA configurada. Cadastre OPENAI_API_KEY e/ou GEMINI_API_KEY no Cloudflare.',
+      provOpts:['openai','gemini'].map(k=>({label:PN[k],disabled:ok&&!pv[k],op:ok&&!pv[k]?.4:1,tip:ok&&!pv[k]?'Chave não configurada no servidor':(st.models&&st.models[k])||'',onClick:()=>this.aiS(a.key,{provider:k}),...pillA(a.provider===k)})),
+      aspOpts:[['landscape','Paisagem 3:2'],['portrait','Retrato 2:3'],['square','Quadrado 1:1'],['wide','Panorâmico 16:9']].map(([k,l])=>({label:l,onClick:()=>this.aiS(a.key,{aspect:k}),...pillA(a.aspect===k)})),
+      qOpts:[['medium','Padrão'],['high','Alta']].map(([k,l])=>({label:l,onClick:()=>this.aiS(a.key,{quality:k}),...pillA(a.quality===k)})),
+      showQ:a.provider==='openai', styleOn:a.styleOn, onStyle:e=>this.aiS(a.key,{styleOn:e.target.checked}),
+      empty:!a.msgs.length, canUseCurrent:!!this.aiTargetImage(),
+      useCurrent:()=>{ const img=this.aiTargetImage(); if(img) this.aiS(a.key,{msgs:[{role:'user',text:'Imagem atual',img}],baseIdx:0}); },
+      sugs:sg.map(t=>({text:t,onClick:()=>this.aiS(a.key,{input:t})})),
+      msgs:a.msgs.map((m,i)=>{ const u=m.role==='user', base=i===a.baseIdx;
+        return { align:u?'flex-end':'flex-start', text:u?(m.text||''):(m.note||''), bubbleBg:u?'#1A1A1A':'#fff', bubbleFg:u?'#fff':'#1A1A1A', error:m.error||'',
+          img:m.img||'', isAi:!u&&!!m.img, imgBorder:base?'#7B3FB0':'transparent',
+          baseLabel:base?'✓ Base dos próximos ajustes':'Ajustar a partir desta', meta:m.img&&!u?`${PN[m.provider]||''} · ${AN[m.aspect]||''}`:'',
+          onUse:()=>this.useAIImage(i), onBase:()=>this.aiS(a.key,{baseIdx:i}), onDl:()=>this.dlAIImage(i) }; }),
+      baseNote:hasBase?'Os próximos pedidos ajustam a imagem marcada em roxo.':'',
+      clearBase:()=>this.aiS(a.key,{baseIdx:-1}),
+      placeholder:hasBase?'Peça um ajuste: “deixe mais clara”, “troque o fundo por um escritório”, “pessoa sorrindo”…':'Descreva a imagem: quem aparece, onde, fazendo o quê, o clima…',
+      input:a.input, onInput:e=>{ const v=e.target.value; this.aiSess[a.key]={...this.aiSess[a.key],input:v}; this.setState(x=>({ai:{...x.ai,input:v}})); },
+      onKey:e=>{ if(e.key==='Enter'&&(e.metaKey||e.ctrlKey)){ e.preventDefault(); this.sendAI(); } },
+      send:()=>this.sendAI(), cantSend:a.busy||!String(a.input||'').trim()||!aiReady, sendOp:a.busy||!String(a.input||'').trim()||!aiReady?.45:1 };
     const ed0=s.edition;
-    return {
+    return { ...remoteVals, ai,
       tabs, tabNoticias:s.tab==='noticias', tabEdicao:s.tab==='edicao', tabColar:s.tab==='colar', tabMarca:s.tab==='marca',
       undo:()=>this.undo(), redo:()=>this.redo(), noUndo:!this.hist.length, noRedo:!this.fut.length, undoOp:this.hist.length?1:.45, redoOp:this.fut.length?1:.45,
-      cardCount:s.cards.length, noCards:!s.cards.length, cardList, hasSel:!!sel, sel:selV, ed, caseOpts, catNames:cats,
+      cardCount:s.cards.length, noCards:!s.cards.length, cardList, hasSel:!!sel, sel:selV, ed, caseOpts, kindOpts, bannerOpts, catNames:cats,
       addCard:()=>{ const last=s.cards[s.cards.length-1]; const c={...this.blankCard(),category:last?last.category:''}; this.commit({cards:[...s.cards,c],selId:c.id}); },
       edition:ed0, edEd, heroSrc, heroPending:!heroSrc, heroBtn:heroSrc?'Substituir foto':'Enviar foto', heroZoom:ed0.hz||1, heroZoomPct:Math.round((ed0.hz||1)*100),
       edLine:`Edição #${ed0.number||'—'} | ${ed0.date||'—'}`,

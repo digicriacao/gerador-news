@@ -1,0 +1,13 @@
+name = "gerador-news-api"
+main = "worker.js"
+compatibility_date = "2025-09-01"
+
+[vars]
+ALLOWED_ORIGINS = "https://digicriacao.github.io"
+OPENAI_IMAGE_MODEL = "gpt-image-2"
+GEMINI_IMAGE_MODEL = "gemini-3.1-flash-image"
+
+[[kv_namespaces]]
+binding = "NEWS"
+# Troque pelo ID do namespace criado com: npx wrangler kv namespace create NEWS
+id = "COLE_AQUI_O_ID_DO_KV"
