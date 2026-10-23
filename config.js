@@ -3,5 +3,5 @@
 // Exemplo: apiUrl: 'https://gerador-news-api.digicriacao.workers.dev'
 // Se ficar vazio, cada pessoa informa o endereço na aba Histórico.
 window.NEWS_CONFIG = {
-  apiUrl: ''
+  apiUrl: 'gerador-news-api.criacao01.workers.dev'
 };
