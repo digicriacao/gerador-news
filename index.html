@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Open+Sans:ital,wdth,wght@0,75..100,400..800;1,75..100,400..800&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F4F4F4}
+a{color:#EA0356}a:hover{color:#B8003F}
+input,textarea,select,button{font-family:inherit}
+@media print{
+ html,body{background:#fff!important;margin:0!important}
+ [data-noprint]{display:none!important}
+ [data-shell]{padding:0!important;background:#fff!important;min-height:0!important}
+ [data-grid]{display:block!important;max-width:none!important;margin:0!important}
+ [data-previewbox]{border:0!important;padding:0!important;background:#fff!important;box-shadow:none!important}
+ [data-scroller]{height:auto!important;max-height:none!important;overflow:visible!important;padding:0!important;background:#fff!important;border:0!important}
+ [data-scale]{width:600px!important;height:auto!important;margin:0!important}
+ [data-scaleinner]{position:static!important;transform:none!important}
+ [data-card]{outline:none!important}
+ *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+}
+</style>
+</helmet>
+<div data-shell="" style="min-height:100vh;background:#F4F4F4;font-family:Poppins,Arial,sans-serif;color:#1A1A1A;padding:28px 32px 56px;box-sizing:border-box">
+  <div data-noprint="" style="max-width:1280px;margin:0 auto 22px;display:flex;flex-direction:column;gap:6px">
+    <div style="font-size:11px;font-weight:700;letter-spacing:.14em;color:#EA0356">ESTÚDIO CRIATIVO</div>
+    <div style="font-size:26px;font-weight:700;letter-spacing:-.01em">Gerador de News Prudential</div>
+    <div style="font-size:14px;line-height:1.6;color:#6B6B6B;max-width:680px">Monte a Conecta PEM da semana: cadastre ou cole as notícias, envie as imagens e baixe a edição diagramada com a identidade da Prudential.</div>
+  </div>
+
+  <div data-grid="" style="max-width:1280px;margin:0 auto;display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start">
+
+    <div data-noprint="" style="flex:1 1 480px;min-width:0;background:#fff;border:1px solid #E8E8E8;border-radius:14px;overflow:hidden">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding:0 20px;border-bottom:1px solid #EFEFEF;flex-wrap:wrap">
+        <div style="display:flex;gap:4px">
+          <sc-for list="{{tabs}}" as="t" hint-placeholder-count="4">
+            <button onClick="{{t.onClick}}" style="padding:16px 12px 13px;border:0;background:none;cursor:pointer;font-size:14px;font-weight:{{t.weight}};color:{{t.color}};border-bottom:2px solid {{t.line}}">{{t.label}}</button>
+          </sc-for>
+        </div>
+        <div style="display:flex;gap:6px;padding-bottom:10px">
+          <button onClick="{{undo}}" disabled="{{noUndo}}" style="padding:6px 12px;border:1px solid #E3E3E3;border-radius:999px;background:#fff;font-size:12px;cursor:pointer;color:#1A1A1A;white-space:nowrap;opacity:{{undoOp}}">↶ Desfazer</button>
+          <button onClick="{{redo}}" disabled="{{noRedo}}" style="padding:6px 12px;border:1px solid #E3E3E3;border-radius:999px;background:#fff;font-size:12px;cursor:pointer;color:#1A1A1A;white-space:nowrap;opacity:{{redoOp}}">Refazer ↷</button>
+        </div>
+      </div>
+
+      <sc-if value="{{tabNoticias}}" hint-placeholder-val="{{ true }}">
+        <div style="padding:20px;display:flex;flex-direction:column;gap:16px">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+            <div style="font-size:14px;font-weight:600">Notícias da edição <span style="color:#8A8A8A;font-weight:500">· {{cardCount}}</span></div>
+            <button onClick="{{addCard}}" style="padding:9px 16px;border:0;border-radius:999px;background:#EA0356;color:#fff;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap" style-hover="background:#C8024A">+ Adicionar notícia</button>
+          </div>
+          <div style="font-size:12px;color:#8A8A8A;line-height:1.5">A ordem da lista é a ordem de exibição. Notícias seguidas da mesma seção ficam sob a mesma aba.</div>
+          <div style="display:flex;flex-direction:column;gap:6px;max-height:300px;overflow:auto">
+            <sc-for list="{{cardList}}" as="it" hint-placeholder-count="0">
+              <div onClick="{{it.onSel}}" style="display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid {{it.border}};background:{{it.bg}};border-radius:10px;cursor:pointer">
+                <div style="font-size:12px;font-weight:600;color:#8A8A8A;text-align:center">{{it.n}}</div>
+                <div style="display:flex;flex-direction:column;gap:4px;min-width:0">
+                  <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{it.label}}</div>
+                  <div style="display:flex;gap:6px;flex-wrap:wrap">
+                    <span style="font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:999px;background:{{it.catBg}};color:{{it.catFg}}">{{it.cat}}</span>
+                    <span style="font-size:10.5px;font-weight:500;padding:2px 8px;border-radius:999px;background:{{it.imgBg}};color:{{it.imgFg}}">{{it.imgBadge}}</span>
+                  </div>
+                </div>
+                <div style="display:flex;gap:4px">
+                  <button onClick="{{it.onUp}}" title="Subir" style="width:28px;height:28px;border:1px solid #E3E3E3;border-radius:8px;background:#fff;cursor:pointer;font-size:12px;color:#1A1A1A">↑</button>
+                  <button onClick="{{it.onDown}}" title="Descer" style="width:28px;height:28px;border:1px solid #E3E3E3;border-radius:8px;background:#fff;cursor:pointer;font-size:12px;color:#1A1A1A">↓</button>
+                  <button onClick="{{it.onDup}}" title="Duplicar" style="width:28px;height:28px;border:1px solid #E3E3E3;border-radius:8px;background:#fff;cursor:pointer;font-size:12px;color:#1A1A1A">⧉</button>
+                  <button onClick="{{it.onDel}}" title="Excluir" style="width:28px;height:28px;border:1px solid #E3E3E3;border-radius:8px;background:#fff;cursor:pointer;font-size:12px;color:#EA0356">✕</button>
+                </div>
+              </div>
+            </sc-for>
+            <sc-if value="{{noCards}}" hint-placeholder-val="{{ false }}">
+              <div style="padding:22px;border:1.5px dashed #E3E3E3;border-radius:10px;text-align:center;font-size:13px;color:#8A8A8A;line-height:1.6">Nenhuma notícia ainda. Adicione uma notícia ou use a aba Colar texto.</div>
+            </sc-if>
+          </div>
+
+          <sc-if value="{{hasSel}}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:14px;border-top:1px solid #EFEFEF;padding-top:18px">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
+                <div style="font-size:15px;font-weight:700">Editando notícia {{sel.n}}</div>
+                <div style="font-size:11.5px;color:#8A8A8A">Use **negrito** e ==destaque em cor==</div>
+              </div>
+              <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px">
+                <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Seção (aba)
+                  <input list="pru-cats" value="{{sel.category}}" onChange="{{ed.category}}" placeholder="Ex: Produtos" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;color:#1A1A1A">
+                </label>
+                <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Fundo do card
+                  <select value="{{sel.bg}}" onChange="{{ed.bg}}" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;background:#fff;color:#1A1A1A">
+                    <option value="auto">Automático ({{sel.bgAuto}})</option>
+                    <option value="navy">Azul-marinho</option>
+                    <option value="blue">Azul</option>
+                    <option value="white">Branco com borda</option>
+                    <option value="gray">Cinza (retícula navy)</option>
+                    <option value="green">Verde</option>
+                    <option value="gradient">Marinho → azul</option>
+                  </select>
+                </label>
+              </div>
+              <datalist id="pru-cats">
+                <sc-for list="{{catNames}}" as="k" hint-placeholder-count="0"><option value="{{k}}"></option></sc-for>
+              </datalist>
+              <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Título
+                <textarea rows="2" value="{{sel.title}}" onChange="{{ed.title}}" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;resize:vertical;color:#1A1A1A"></textarea>
+              </label>
+              <div style="display:flex;gap:8px;align-items:center;font-size:12.5px">
+                <span style="color:#6B6B6B">Caixa do título:</span>
+                <sc-for list="{{caseOpts}}" as="o" hint-placeholder-count="2">
+                  <button onClick="{{o.onClick}}" style="padding:6px 12px;border-radius:999px;border:1px solid {{o.border}};background:{{o.bg}};color:{{o.color}};font-size:12px;cursor:pointer">{{o.label}}</button>
+                </sc-for>
+              </div>
+              <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Texto principal <span style="font-weight:400;color:#8A8A8A;font-size:11.5px">Cada quebra de linha vira um parágrafo.</span>
+                <textarea rows="7" value="{{sel.body}}" onChange="{{ed.body}}" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;line-height:1.5;resize:vertical;color:#1A1A1A"></textarea>
+              </label>
+
+              <details style="border:1px solid #EFEFEF;border-radius:10px;padding:12px 14px">
+                <summary style="cursor:pointer;font-size:13px;font-weight:600">Blocos complementares <span style="font-weight:400;color:#8A8A8A">{{sel.extrasSummary}}</span></summary>
+                <div style="display:flex;flex-direction:column;gap:12px;margin-top:12px">
+                  <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Lista com marcadores <span style="font-weight:400;color:#8A8A8A;font-size:11.5px">Um item por linha. O trecho antes de “:” fica em negrito.</span>
+                    <textarea rows="3" value="{{sel.list}}" onChange="{{ed.list}}" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;resize:vertical;color:#1A1A1A"></textarea>
+                  </label>
+                  <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Caixa de aviso <span style="font-weight:400;color:#8A8A8A;font-size:11.5px">Ex: “Importante: …”</span>
+                    <textarea rows="2" value="{{sel.notice}}" onChange="{{ed.notice}}" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;resize:vertical;color:#1A1A1A"></textarea>
+                  </label>
+                  <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Citação
+                    <textarea rows="2" value="{{sel.quote}}" onChange="{{ed.quote}}" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;resize:vertical;color:#1A1A1A"></textarea>
+                  </label>
+                  <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Autor da citação
+                    <input value="{{sel.author}}" onChange="{{ed.author}}" placeholder="Nome, cargo" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;color:#1A1A1A">
+                  </label>
+                  <label style="display:flex;gap:8px;align-items:center;font-size:12.5px"><input type="checkbox" checked="{{sel.portraitOn}}" onChange="{{ed.portraitOn}}"> Foto do autor (círculo)</label>
+                  <sc-if value="{{sel.portraitOn}}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+                      <label style="padding:8px 14px;border:1px solid #E3E3E3;border-radius:999px;font-size:12px;cursor:pointer;background:#fff">{{sel.portraitBtn}}<input type="file" accept="image/*" onChange="{{ed.portrait}}" style="display:none"></label>
+                      <sc-if value="{{sel.portraitSrc}}" hint-placeholder-val="{{ false }}"><img src="{{sel.portraitSrc}}" alt="" style="width:40px;height:40px;border-radius:50%;object-fit:cover"></sc-if>
+                    </div>
+                  </sc-if>
+                  <div style="display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:10px;align-items:end">
+                    <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Chamada final (CTA)
+                      <input value="{{sel.cta}}" onChange="{{ed.cta}}" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;color:#1A1A1A">
+                    </label>
+                    <select value="{{sel.ctaStyle}}" onChange="{{ed.ctaStyle}}" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;background:#fff;color:#1A1A1A">
+                      <option value="text">Texto em destaque</option>
+                      <option value="button">Botão</option>
+                      <option value="band">Faixa no rodapé</option>
+                    </select>
+                  </div>
+                  <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Nota de validade
+                    <input value="{{sel.validity}}" onChange="{{ed.validity}}" placeholder="Ex: Válido para todos os canais." style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;color:#1A1A1A">
+                  </label>
+                  <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Crédito / fonte / nota de rodapé
+                    <input value="{{sel.credit}}" onChange="{{ed.credit}}" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;color:#1A1A1A">
+                  </label>
+                </div>
+              </details>
+
+              <div style="border:1px solid #EFEFEF;border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:12px">
+                <label style="display:flex;gap:8px;align-items:center;font-size:13px;font-weight:600"><input type="checkbox" checked="{{sel.hasImage}}" onChange="{{ed.hasImage}}"> Esta notícia terá imagem</label>
+                <sc-if value="{{sel.hasImage}}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;flex-direction:column;gap:12px">
+                    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+                      <sc-if value="{{sel.imgSrc}}" hint-placeholder-val="{{ false }}"><img src="{{sel.imgSrc}}" alt="" style="width:72px;height:54px;border-radius:8px;object-fit:cover;border:1px solid #E3E3E3"></sc-if>
+                      <sc-if value="{{sel.imgMissing}}" hint-placeholder-val="{{ false }}"><div style="width:72px;height:54px;border-radius:8px;border:1.5px dashed #E3B449;background:#FFF8E6;font-size:9.5px;font-weight:600;color:#8A6A10;display:flex;align-items:center;justify-content:center;text-align:center">PENDENTE</div></sc-if>
+                      <label style="padding:9px 16px;border-radius:999px;background:#1A1A1A;color:#fff;font-size:12.5px;font-weight:600;cursor:pointer">{{sel.imgBtn}}<input type="file" accept="image/*" onChange="{{ed.image}}" style="display:none"></label>
+                      <sc-if value="{{sel.imgSrc}}" hint-placeholder-val="{{ false }}"><button onClick="{{ed.removeImage}}" style="padding:9px 14px;border:1px solid #E3E3E3;border-radius:999px;background:#fff;font-size:12.5px;cursor:pointer;color:#1A1A1A">Remover</button></sc-if>
+                    </div>
+                    <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Posição da imagem no card
+                      <select value="{{sel.imgLayout}}" onChange="{{ed.imgLayout}}" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;background:#fff;color:#1A1A1A">
+                        <option value="auto">Automático ({{sel.imgAuto}})</option>
+                        <option value="right">Lateral direita (com esfumado)</option>
+                        <option value="circle">Círculo ao lado do texto</option>
+                        <option value="top">Faixa no topo do card</option>
+                      </select>
+                    </label>
+                    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px">
+                      <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#6B6B6B">Horizontal {{sel.fx}}%<input type="range" min="0" max="100" value="{{sel.fx}}" onChange="{{ed.fx}}" style="accent-color:#EA0356"></label>
+                      <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#6B6B6B">Vertical {{sel.fy}}%<input type="range" min="0" max="100" value="{{sel.fy}}" onChange="{{ed.fy}}" style="accent-color:#EA0356"></label>
+                      <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#6B6B6B">Zoom {{sel.zoomLabel}}<input type="range" min="100" max="250" value="{{sel.zoomPct}}" onChange="{{ed.zoom}}" style="accent-color:#EA0356"></label>
+                    </div>
+                    <label style="display:flex;gap:8px;align-items:center;font-size:12.5px"><input type="checkbox" checked="{{sel.contain}}" onChange="{{ed.contain}}"> Mostrar a imagem inteira, sem corte</label>
+                    <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Legenda / crédito da imagem
+                      <input value="{{sel.caption}}" onChange="{{ed.caption}}" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;color:#1A1A1A">
+                    </label>
+                  </div>
+                </sc-if>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{tabEdicao}}" hint-placeholder-val="{{ false }}">
+        <div style="padding:20px;display:flex;flex-direction:column;gap:16px">
+          <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px">
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Número da edição
+              <input value="{{edition.number}}" onChange="{{edEd.number}}" placeholder="Ex: 21" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;color:#1A1A1A">
+            </label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Data
+              <input value="{{edition.date}}" onChange="{{edEd.date}}" placeholder="Ex: Out.2026" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;color:#1A1A1A">
+            </label>
+          </div>
+          <div style="border:1px solid #EFEFEF;border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:12px">
+            <div style="font-size:13px;font-weight:600">Foto de capa (círculo do cabeçalho)</div>
+            <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+              <sc-if value="{{heroSrc}}" hint-placeholder-val="{{ false }}"><img src="{{heroSrc}}" alt="" style="width:54px;height:54px;border-radius:50%;object-fit:cover"></sc-if>
+              <label style="padding:9px 16px;border-radius:999px;background:#1A1A1A;color:#fff;font-size:12.5px;font-weight:600;cursor:pointer">{{heroBtn}}<input type="file" accept="image/*" onChange="{{edEd.hero}}" style="display:none"></label>
+              <sc-if value="{{heroSrc}}" hint-placeholder-val="{{ false }}"><button onClick="{{edEd.removeHero}}" style="padding:9px 14px;border:1px solid #E3E3E3;border-radius:999px;background:#fff;font-size:12.5px;cursor:pointer;color:#1A1A1A">Remover</button></sc-if>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px">
+              <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#6B6B6B">Horizontal<input type="range" min="0" max="100" value="{{edition.hfx}}" onChange="{{edEd.hfx}}" style="accent-color:#EA0356"></label>
+              <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#6B6B6B">Vertical<input type="range" min="0" max="100" value="{{edition.hfy}}" onChange="{{edEd.hfy}}" style="accent-color:#EA0356"></label>
+              <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#6B6B6B">Zoom<input type="range" min="100" max="250" value="{{heroZoomPct}}" onChange="{{edEd.hz}}" style="accent-color:#EA0356"></label>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px;border-top:1px solid #EFEFEF;padding-top:16px">
+            <div style="font-size:13px;font-weight:600">Arquivo da edição</div>
+            <div style="font-size:12px;color:#8A8A8A;line-height:1.5">O trabalho é salvo automaticamente neste navegador. Para guardar, enviar a outra pessoa ou reabrir depois, salve o projeto (.json com textos, imagens e ajustes).</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button onClick="{{newEdition}}" style="padding:9px 16px;border:0;border-radius:999px;background:#EA0356;color:#fff;font-size:12.5px;font-weight:600;cursor:pointer">Nova edição</button>
+              <button onClick="{{saveProject}}" style="padding:9px 16px;border:1px solid #E3E3E3;border-radius:999px;background:#fff;font-size:12.5px;font-weight:600;cursor:pointer;color:#1A1A1A">Salvar projeto</button>
+              <label style="padding:9px 16px;border:1px solid #E3E3E3;border-radius:999px;background:#fff;font-size:12.5px;font-weight:600;cursor:pointer">Abrir projeto<input type="file" accept=".json,application/json" onChange="{{openProject}}" style="display:none"></label>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{tabColar}}" hint-placeholder-val="{{ false }}">
+        <div style="padding:20px;display:flex;flex-direction:column;gap:14px">
+          <div style="font-size:12.5px;color:#6B6B6B;line-height:1.65">Separe as notícias com uma linha <b>---</b>. Em cada uma, a primeira linha sem rótulo vira o título e o restante vira texto. Rótulos opcionais no início da linha: <b>Seção:</b> <b>Título:</b> <b>Citação:</b> <b>Autor:</b> <b>Chamada:</b> <b>Validade:</b> <b>Imagem: sim</b> <b>Legenda:</b> <b>Crédito:</b>. Linhas iniciadas com “Importante:” ou “Atenção:” viram caixa de aviso; linhas com “- ” viram lista. O texto não é alterado.</div>
+          <textarea rows="14" value="{{paste}}" onChange="{{onPaste}}" placeholder="Seção: Produtos&#10;Dia das Crianças: ==cuidar hoje== também é proteger o amanhã&#10;Neste Dia das Crianças, vale lembrar...&#10;Imagem: sim&#10;---&#10;Seção: Operações&#10;..." style="padding:12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;line-height:1.5;resize:vertical;font-family:ui-monospace,Menlo,monospace;color:#1A1A1A"></textarea>
+          <div style="display:flex;gap:8px">
+            <button onClick="{{parsePaste}}" style="padding:9px 16px;border:0;border-radius:999px;background:#EA0356;color:#fff;font-size:12.5px;font-weight:600;cursor:pointer">Identificar notícias</button>
+          </div>
+          <sc-if value="{{hasDrafts}}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:10px;border-top:1px solid #EFEFEF;padding-top:14px">
+              <div style="font-size:13px;font-weight:600">Revise antes de adicionar · {{draftCount}} notícias</div>
+              <sc-for list="{{drafts}}" as="d" hint-placeholder-count="0">
+                <div style="border:1px solid #E8E8E8;border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:8px">
+                  <div style="display:grid;grid-template-columns:24px minmax(0,1fr) minmax(0,1fr) auto;gap:8px;align-items:center">
+                    <div style="font-size:12px;font-weight:600;color:#8A8A8A">{{d.n}}</div>
+                    <input value="{{d.category}}" onChange="{{d.onCat}}" placeholder="Seção" style="padding:8px 10px;border:1px solid #E3E3E3;border-radius:8px;font-size:12.5px;color:#1A1A1A">
+                    <label style="display:flex;gap:6px;align-items:center;font-size:12px"><input type="checkbox" checked="{{d.hasImage}}" onChange="{{d.onImg}}"> Terá imagem</label>
+                    <button onClick="{{d.onDel}}" style="padding:6px 10px;border:1px solid #E3E3E3;border-radius:8px;background:#fff;font-size:12px;cursor:pointer;color:#EA0356">Remover</button>
+                  </div>
+                  <input value="{{d.title}}" onChange="{{d.onTitle}}" placeholder="Título" style="padding:8px 10px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;font-weight:600;color:#1A1A1A">
+                  <textarea rows="3" value="{{d.body}}" onChange="{{d.onBody}}" style="padding:8px 10px;border:1px solid #E3E3E3;border-radius:8px;font-size:12.5px;line-height:1.5;resize:vertical;color:#1A1A1A"></textarea>
+                  <sc-if value="{{d.extras}}" hint-placeholder-val="{{ false }}"><div style="font-size:11.5px;color:#6B6B6B">Também identificado: {{d.extras}}</div></sc-if>
+                </div>
+              </sc-for>
+              <div style="display:flex;gap:8px">
+                <button onClick="{{addDrafts}}" style="padding:9px 16px;border:0;border-radius:999px;background:#1A1A1A;color:#fff;font-size:12.5px;font-weight:600;cursor:pointer">Adicionar à edição</button>
+                <button onClick="{{clearDrafts}}" style="padding:9px 16px;border:1px solid #E3E3E3;border-radius:999px;background:#fff;font-size:12.5px;cursor:pointer;color:#1A1A1A">Descartar</button>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{tabMarca}}" hint-placeholder-val="{{ false }}">
+        <div style="padding:20px;display:flex;flex-direction:column;gap:18px">
+          <div style="font-size:12px;color:#8A8A8A;line-height:1.5">Configuração fixa, reaproveitada em todas as edições.</div>
+          <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px">
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Nome (linha 1)<input value="{{brand.t1}}" onChange="{{edBrand.t1}}" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;color:#1A1A1A"></label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Nome (linha 2)<input value="{{brand.t2}}" onChange="{{edBrand.t2}}" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;color:#1A1A1A"></label>
+          </div>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Assinatura do cabeçalho<textarea rows="2" value="{{brand.tagline}}" onChange="{{edBrand.tagline}}" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;resize:vertical;color:#1A1A1A"></textarea></label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Aviso do cabeçalho<textarea rows="3" value="{{brand.disclaimer}}" onChange="{{edBrand.disclaimer}}" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;resize:vertical;color:#1A1A1A"></textarea></label>
+          <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px">
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Instagram<input value="{{brand.insta}}" onChange="{{edBrand.insta}}" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;color:#1A1A1A"></label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Assinatura do rodapé<input value="{{brand.slogan}}" onChange="{{edBrand.slogan}}" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;color:#1A1A1A"></label>
+          </div>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Frase do rodapé<textarea rows="2" value="{{brand.footTag}}" onChange="{{edBrand.footTag}}" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;resize:vertical;color:#1A1A1A"></textarea></label>
+
+          <div style="display:flex;flex-direction:column;gap:8px;border-top:1px solid #EFEFEF;padding-top:16px">
+            <div style="font-size:13px;font-weight:600">Cores das abas por seção</div>
+            <sc-for list="{{catRows}}" as="r" hint-placeholder-count="0">
+              <div style="display:grid;grid-template-columns:minmax(0,1fr) 150px 28px;gap:8px;align-items:center">
+                <span style="justify-self:start;font-size:12px;font-weight:600;padding:5px 14px;border-radius:999px;background:{{r.bg}};color:{{r.fg}}">{{r.name}}</span>
+                <select value="{{r.color}}" onChange="{{r.onColor}}" style="padding:7px 10px;border:1px solid #E3E3E3;border-radius:8px;font-size:12.5px;background:#fff;color:#1A1A1A">
+                  <option value="teal">Azul-petróleo (teal)</option>
+                  <option value="blue">Azul</option>
+                  <option value="navy">Azul-marinho</option>
+                  <option value="gold">Dourado</option>
+                  <option value="violet">Violeta</option>
+                </select>
+                <button onClick="{{r.onDel}}" style="width:28px;height:28px;border:1px solid #E3E3E3;border-radius:8px;background:#fff;cursor:pointer;color:#8A8A8A">✕</button>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:8px;border-top:1px solid #EFEFEF;padding-top:16px">
+            <div style="font-size:13px;font-weight:600">Fontes oficiais</div>
+            <div style="font-size:12px;color:#8A8A8A;line-height:1.5">Sem os arquivos, o gerador usa Open Sans, substituta indicada no guia para uso on-line. Envie as fontes licenciadas (.otf, .ttf ou .woff) para igualar as edições produzidas.</div>
+            <sc-for list="{{fontRows}}" as="f" hint-placeholder-count="3">
+              <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid #EFEFEF;border-radius:10px">
+                <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
+                  <div style="font-size:12.5px;font-weight:600">{{f.label}}</div>
+                  <div style="font-size:11.5px;color:{{f.stColor}};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{f.status}}</div>
+                </div>
+                <label style="padding:7px 14px;border:1px solid #E3E3E3;border-radius:999px;font-size:12px;cursor:pointer;background:#fff">Enviar<input type="file" accept=".otf,.ttf,.woff,.woff2" onChange="{{f.onFile}}" style="display:none"></label>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:8px;border-top:1px solid #EFEFEF;padding-top:16px">
+            <div style="font-size:13px;font-weight:600">Cenários de teste</div>
+            <div style="font-size:12px;color:#8A8A8A;line-height:1.5">Substituem as notícias atuais por conteúdo fictício para conferir a diagramação. Dá para desfazer.</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <sc-for list="{{scenarios}}" as="sc" hint-placeholder-count="4">
+                <button onClick="{{sc.onClick}}" style="padding:7px 12px;border:1px solid #E3E3E3;border-radius:999px;background:#fff;font-size:12px;cursor:pointer;color:#1A1A1A">{{sc.label}}</button>
+              </sc-for>
+            </div>
+            <button onClick="{{resetLayouts}}" style="align-self:flex-start;margin-top:6px;padding:7px 12px;border:1px solid #E3E3E3;border-radius:999px;background:#fff;font-size:12px;cursor:pointer;color:#1A1A1A">Voltar todos os cards ao layout automático</button>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+
+    <div data-previewbox="" style="flex:1 1 560px;min-width:0;background:#fff;border:1.5px dashed #DADADA;border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:14px;box-sizing:border-box">
+      <div data-noprint="" style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+        <div style="font-size:13px;font-weight:600;white-space:nowrap">Pré-visualização <span style="color:#8A8A8A;font-weight:500">· 600 × {{newsH}} px</span></div>
+        <div style="display:flex;gap:4px">
+          <sc-for list="{{zooms}}" as="z" hint-placeholder-count="3">
+            <button onClick="{{z.onClick}}" style="padding:5px 10px;border-radius:999px;border:1px solid {{z.border}};background:{{z.bg}};color:{{z.color}};font-size:11.5px;cursor:pointer">{{z.label}}</button>
+          </sc-for>
+        </div>
+      </div>
+      <sc-if value="{{hasWarnings}}" hint-placeholder-val="{{ false }}">
+        <div data-noprint="" style="display:flex;flex-direction:column;gap:6px;padding:12px 14px;border-radius:10px;background:#FFF7E8;border:1px solid #F3DDAE">
+          <div style="font-size:12.5px;font-weight:600;color:#7A5300">Pontos para revisar · {{warnCount}}</div>
+          <sc-for list="{{warnings}}" as="w" hint-placeholder-count="0">
+            <div onClick="{{w.onClick}}" style="font-size:12px;line-height:1.45;color:#5C4300;cursor:pointer">• {{w.text}}</div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <div data-scroller="" style="height:72vh;overflow:auto;background:#F4F4F4;border-radius:10px;padding:20px;box-sizing:border-box">
+        <div data-scale="" style="width:{{pw}}px;height:{{ph}}px;margin:0 auto;position:relative">
+          <div data-scaleinner="" style="position:absolute;left:0;top:0;transform:scale({{zoom}});transform-origin:0 0">
+
+            <div data-newsroot="" style="width:600px;background:#fff;position:relative;overflow:hidden;font-family:'PruBody','Open Sans',Arial,sans-serif;color:#001F45">
+              <div style="position:relative;height:372px;background:#001F45;overflow:visible;z-index:1">
+                <div style="position:absolute;left:333px;top:0;width:267px;height:321px;background-image:radial-gradient(circle,#007BC3 1.5px,transparent 1.9px);background-size:15px 15px;background-position:7px 7px"></div>
+                <img src="assets/logo-prudential-branco.png" alt="Prudential" style="position:absolute;left:23px;top:36px;width:128px;height:auto">
+                <div style="position:absolute;left:56px;top:73px;font-size:11px;font-weight:500;color:#fff;letter-spacing:-.01em;white-space:nowrap">{{edLine}}</div>
+                <div style="position:absolute;left:24px;top:116px;font-family:'PruTitle','Open Sans',Arial,sans-serif;font-weight:700;font-stretch:75%;font-size:64px;line-height:.9;letter-spacing:-.01em;text-transform:uppercase">
+                  <div style="color:#14D6E0">{{brand.t1}}</div>
+                  <div style="color:#fff">{{brand.t2}}</div>
+                </div>
+                <div style="position:absolute;left:25px;top:244px;width:250px;font-size:14.5px;line-height:1.3;color:#fff;white-space:pre-line">
+                  <sc-for list="{{taglineSegs}}" as="s" hint-placeholder-count="1"><span style="font-weight:{{s.w}}">{{s.t}}</span></sc-for>
+                </div>
+                <div style="position:absolute;left:0;top:309px;width:290px;height:1px;background:rgba(255,255,255,.4)"></div>
+                <img src="assets/icon-cadeado.png" alt="" style="position:absolute;left:23px;top:321px;width:33px;height:33px">
+                <div style="position:absolute;left:69px;top:322px;width:220px;font-size:9.5px;line-height:1.25;color:#fff;white-space:pre-line">{{brand.disclaimer}}</div>
+                <div style="position:absolute;left:276px;top:80px;width:296px;height:296px;border-radius:50%;overflow:hidden;background:#405773">
+                  <sc-if value="{{heroSrc}}" hint-placeholder-val="{{ false }}"><img src="{{heroSrc}}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:{{edition.hfx}}% {{edition.hfy}}%;transform:scale({{heroZoom}});transform-origin:{{edition.hfx}}% {{edition.hfy}}%"></sc-if>
+                  <sc-if value="{{heroPending}}" hint-placeholder-val="{{ true }}"><div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(255,255,255,.14) 0 8px,rgba(255,255,255,.04) 8px 16px);display:flex;align-items:center;justify-content:center;font-family:'Open Sans',Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;color:#fff">FOTO DE CAPA PENDENTE</div></sc-if>
+                </div>
+              </div>
+
+              <div style="display:flex;flex-direction:column;gap:14px;padding:36px 22px 8px">
+                <sc-for list="{{cards}}" as="c" hint-placeholder-count="0">
+                  <div data-card="" data-card-id="{{c.id}}" onClick="{{c.onSel}}" style="display:flex;flex-direction:column;cursor:pointer;outline:{{c.outline}};outline-offset:5px;border-radius:24px;margin-top:{{c.mt}}px">
+                    <sc-if value="{{c.tabShow}}" hint-placeholder-val="{{ false }}">
+                      <div style="position:relative;align-self:flex-start;margin:0 0 10px 6px;display:flex">
+                        <div style="position:absolute;left:-6px;bottom:-4px;width:20px;height:16px;background:{{c.tabBg}};clip-path:polygon(0 100%,100% 0,100% 55%)"></div>
+                        <div style="position:relative;min-width:150px;padding:7px 30px 7px 26px;border-radius:16px;background:{{c.tabBg}};color:{{c.tabFg}};font-weight:700;font-size:12.5px;text-align:center;box-sizing:border-box;white-space:nowrap">{{c.category}}</div>
+                      </div>
+                    </sc-if>
+                    <div style="position:relative;overflow:hidden;border-radius:24px;background:{{c.bg}};border:{{c.border}};min-height:{{c.minH}}px;display:flex;flex-direction:column;box-sizing:border-box">
+                      <sc-if value="{{c.isTop}}" hint-placeholder-val="{{ false }}">
+                        <div style="position:relative;height:230px;flex:none;overflow:hidden;background:{{c.imgBg}}">
+                          <sc-if value="{{c.imgSrc}}" hint-placeholder-val="{{ false }}"><img src="{{c.imgSrc}}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:{{c.fit}};object-position:{{c.fx}}% {{c.fy}}%;transform:scale({{c.zoom}});transform-origin:{{c.fx}}% {{c.fy}}%"></sc-if>
+                          <sc-if value="{{c.imgPending}}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(255,255,255,.18) 0 8px,rgba(255,255,255,.05) 8px 16px),#7E8FA1;display:flex;align-items:center;justify-content:center;font-family:'Open Sans',Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;color:#fff">IMAGEM PENDENTE</div></sc-if>
+                        </div>
+                      </sc-if>
+                      <sc-if value="{{c.isRight}}" hint-placeholder-val="{{ false }}">
+                        <div style="position:absolute;top:0;right:0;bottom:0;width:47%;overflow:hidden;-webkit-mask-image:linear-gradient(to right,transparent 0,#000 30%);mask-image:linear-gradient(to right,transparent 0,#000 30%);background:{{c.imgBg}}">
+                          <sc-if value="{{c.imgSrc}}" hint-placeholder-val="{{ false }}"><img src="{{c.imgSrc}}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:{{c.fit}};object-position:{{c.fx}}% {{c.fy}}%;transform:scale({{c.zoom}});transform-origin:{{c.fx}}% {{c.fy}}%"></sc-if>
+                          <sc-if value="{{c.imgPending}}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(255,255,255,.18) 0 8px,rgba(255,255,255,.05) 8px 16px),#7E8FA1;display:flex;align-items:center;justify-content:center;padding-left:30%;box-sizing:border-box;font-family:'Open Sans',Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;color:#fff;text-align:center">IMAGEM PENDENTE</div></sc-if>
+                        </div>
+                      </sc-if>
+                      <sc-if value="{{c.dots}}" hint-placeholder-val="{{ false }}">
+                        <div style="position:absolute;top:16px;right:16px;width:96px;height:60px;background-image:radial-gradient(circle,{{c.dotColor}} 1.4px,transparent 1.8px);background-size:12px 12px"></div>
+                      </sc-if>
+                      <div style="position:relative;display:flex;flex-direction:column;gap:13px;padding:26px 24px 22px;width:{{c.textW}};box-sizing:border-box">
+                        <div style="font-family:'PruTitle','Open Sans',Arial,sans-serif;font-weight:700;font-stretch:75%;font-size:{{c.titleSize}}px;line-height:.95;letter-spacing:-.005em;text-transform:{{c.tt}};color:{{c.titleColor}};text-wrap:balance;padding-right:{{c.titlePad}}px">
+                          <sc-for list="{{c.titleSegs}}" as="s" hint-placeholder-count="1"><span style="color:{{s.c}}">{{s.t}}</span></sc-for>
+                        </div>
+                        <div style="display:grid;grid-template-columns:{{c.bodyCols}};gap:18px;align-items:center">
+                          <div style="display:flex;flex-direction:column;gap:9px;min-width:0">
+                            <sc-for list="{{c.paras}}" as="p" hint-placeholder-count="0">
+                              <div style="font-size:11.5px;line-height:1.3;color:{{c.bodyColor}};text-wrap:pretty"><sc-for list="{{p.segs}}" as="s" hint-placeholder-count="1"><span style="font-weight:{{s.w}};color:{{s.c}}">{{s.t}}</span></sc-for></div>
+                            </sc-for>
+                          </div>
+                          <sc-if value="{{c.isCircle}}" hint-placeholder-val="{{ false }}">
+                            <div style="position:relative;width:160px;height:160px;border-radius:50%;overflow:hidden;background:{{c.imgBg}}">
+                              <sc-if value="{{c.imgSrc}}" hint-placeholder-val="{{ false }}"><img src="{{c.imgSrc}}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:{{c.fit}};object-position:{{c.fx}}% {{c.fy}}%;transform:scale({{c.zoom}});transform-origin:{{c.fx}}% {{c.fy}}%"></sc-if>
+                              <sc-if value="{{c.imgPending}}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(255,255,255,.18) 0 8px,rgba(255,255,255,.05) 8px 16px),#7E8FA1;display:flex;align-items:center;justify-content:center;font-family:'Open Sans',Arial,sans-serif;font-size:9px;font-weight:700;letter-spacing:.1em;color:#fff;text-align:center;padding:14px">IMAGEM PENDENTE</div></sc-if>
+                            </div>
+                          </sc-if>
+                        </div>
+                        <sc-if value="{{c.hasList}}" hint-placeholder-val="{{ false }}">
+                          <div style="display:flex;flex-direction:column;gap:6px">
+                            <sc-for list="{{c.list}}" as="li" hint-placeholder-count="0">
+                              <div style="display:grid;grid-template-columns:12px minmax(0,1fr);gap:9px;align-items:start">
+                                <div style="width:8px;height:8px;margin-top:4px;border-radius:50%;border:2px solid {{c.accent}}"></div>
+                                <div style="font-size:11.5px;line-height:1.3;color:{{c.bodyColor}}"><sc-for list="{{li.segs}}" as="s" hint-placeholder-count="1"><span style="font-weight:{{s.w}};color:{{s.c}}">{{s.t}}</span></sc-for></div>
+                              </div>
+                            </sc-for>
+                          </div>
+                        </sc-if>
+                        <sc-if value="{{c.hasNotice}}" hint-placeholder-val="{{ false }}">
+                          <div style="display:grid;grid-template-columns:24px minmax(0,1fr);gap:12px;align-items:center;padding:13px 16px;border-radius:12px;background:{{c.noticeBg}}">
+                            <div style="width:24px;height:24px;border-radius:50%;background:{{c.noticeIcon}};color:{{c.noticeIconFg}};font-family:'Open Sans',Arial,sans-serif;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center">!</div>
+                            <div style="font-size:11px;line-height:1.3;color:{{c.noticeFg}}"><sc-for list="{{c.noticeSegs}}" as="s" hint-placeholder-count="1"><span style="font-weight:{{s.w}};color:{{s.c}}">{{s.t}}</span></sc-for></div>
+                          </div>
+                        </sc-if>
+                        <sc-if value="{{c.hasQuote}}" hint-placeholder-val="{{ false }}">
+                          <div style="display:grid;grid-template-columns:{{c.quoteCols}};gap:14px;align-items:center;margin-top:4px">
+                            <div style="font-family:'PruTitle','Open Sans',Arial,sans-serif;font-weight:800;font-size:72px;line-height:.7;height:44px;color:{{c.accent}};align-self:start">“</div>
+                            <div style="display:flex;flex-direction:column;gap:10px;min-width:0">
+                              <div style="font-size:14px;line-height:1.3;font-weight:700;font-style:italic;color:{{c.bodyColor}}"><sc-for list="{{c.quoteSegs}}" as="s" hint-placeholder-count="1"><span style="color:{{s.c}}">{{s.t}}</span></sc-for></div>
+                              <sc-if value="{{c.author}}" hint-placeholder-val="{{ false }}"><div style="font-size:9.5px;font-weight:700;font-style:italic;color:{{c.accent}}">{{c.author}}</div></sc-if>
+                            </div>
+                            <sc-if value="{{c.portraitOn}}" hint-placeholder-val="{{ false }}">
+                              <div style="position:relative;width:120px;height:120px;border-radius:50%;overflow:hidden;background:{{c.imgBg}}">
+                                <sc-if value="{{c.portraitSrc}}" hint-placeholder-val="{{ false }}"><img src="{{c.portraitSrc}}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"></sc-if>
+                                <sc-if value="{{c.portraitPending}}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(255,255,255,.18) 0 8px,rgba(255,255,255,.05) 8px 16px),#7E8FA1;display:flex;align-items:center;justify-content:center;font-family:'Open Sans',Arial,sans-serif;font-size:8.5px;font-weight:700;letter-spacing:.1em;color:#fff;text-align:center;padding:12px">FOTO PENDENTE</div></sc-if>
+                              </div>
+                            </sc-if>
+                          </div>
+                        </sc-if>
+                        <sc-if value="{{c.ctaText}}" hint-placeholder-val="{{ false }}">
+                          <div style="font-size:12px;line-height:1.3;font-weight:700;text-align:center;color:{{c.bodyColor}};padding:4px 10px 0;text-wrap:balance"><sc-for list="{{c.ctaSegs}}" as="s" hint-placeholder-count="1"><span style="color:{{s.c}}">{{s.t}}</span></sc-for></div>
+                        </sc-if>
+                        <sc-if value="{{c.ctaButton}}" hint-placeholder-val="{{ false }}">
+                          <div style="align-self:center;max-width:360px;padding:10px 26px;border-radius:999px;background:{{c.btnBg}};color:{{c.btnFg}};font-family:'PruTitle','Open Sans',Arial,sans-serif;font-weight:700;font-stretch:75%;font-size:13.5px;line-height:1.05;text-transform:uppercase;text-align:center">{{c.cta}}</div>
+                        </sc-if>
+                        <sc-if value="{{c.caption}}" hint-placeholder-val="{{ false }}"><div style="font-size:8.5px;line-height:1.3;color:{{c.muted}}">{{c.caption}}</div></sc-if>
+                        <sc-if value="{{c.credit}}" hint-placeholder-val="{{ false }}"><div style="font-size:8.5px;line-height:1.3;color:{{c.muted}};text-align:center">{{c.credit}}</div></sc-if>
+                        <sc-if value="{{c.validity}}" hint-placeholder-val="{{ false }}"><div style="font-size:8.5px;font-weight:700;font-style:italic;color:{{c.muted}};text-align:center">{{c.validity}}</div></sc-if>
+                      </div>
+                      <sc-if value="{{c.ctaBand}}" hint-placeholder-val="{{ false }}">
+                        <div style="position:relative;margin-top:auto;padding:13px 28px;background:{{c.bandBg}};color:#fff;font-size:12px;line-height:1.3;font-weight:700;text-align:center;text-wrap:balance"><sc-for list="{{c.ctaSegs}}" as="s" hint-placeholder-count="1"><span>{{s.t}}</span></sc-for></div>
+                      </sc-if>
+                    </div>
+                  </div>
+                </sc-for>
+                <sc-if value="{{noCards}}" hint-placeholder-val="{{ false }}">
+                  <div style="padding:60px 20px;border:1.5px dashed #BFC7D1;border-radius:24px;text-align:center;font-family:'Open Sans',Arial,sans-serif;font-size:12px;color:#405773">As notícias da edição aparecem aqui.</div>
+                </sc-if>
+              </div>
+
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:20px;padding:34px 30px 30px">
+                <div style="display:flex;flex-direction:column;gap:8px">
+                  <div style="font-family:'PruTitle','Open Sans',Arial,sans-serif;font-weight:700;font-stretch:75%;font-size:40px;line-height:.9;letter-spacing:-.01em;text-transform:uppercase;color:#001F45">{{brand.t1}} <span style="color:#14D6E0">{{brand.t2}}</span></div>
+                  <div style="font-size:12.5px;line-height:1.25;color:#001F45;white-space:pre-line">{{brand.footTag}}</div>
+                </div>
+                <div style="display:flex;gap:10px;align-items:center">
+                  <img src="assets/icon-instagram.png" alt="Instagram" style="width:36px;height:36px">
+                  <div style="font-size:12.5px;line-height:1.3;color:#001F45">Siga-nos:<br><span style="color:#14D6E0">{{brand.insta}}</span></div>
+                </div>
+              </div>
+              <div style="height:64px;background:#001F45;padding:0 22px;display:flex;align-items:center;justify-content:space-between">
+                <img src="assets/logo-prudential-branco.png" alt="Prudential" style="width:108px;height:auto">
+                <div style="font-family:'PruTitle','Open Sans',Arial,sans-serif;font-weight:700;font-stretch:75%;font-size:13px;color:#fff;text-transform:uppercase;white-space:nowrap">{{brand.slogan}}</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div data-noprint="" style="display:flex;flex-direction:column;gap:12px;max-width:420px;width:100%;align-self:center">
+        <div style="font-size:13px;font-weight:600">Formato do arquivo</div>
+        <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px">
+          <sc-for list="{{fmts}}" as="f" hint-placeholder-count="4">
+            <button onClick="{{f.onClick}}" style="padding:11px 6px;border-radius:999px;border:1px solid {{f.border}};background:{{f.bg}};color:{{f.color}};font-size:13px;font-weight:{{f.weight}};cursor:pointer">{{f.label}}</button>
+          </sc-for>
+        </div>
+        <div style="font-size:11.5px;line-height:1.5;color:#6B6B6B">{{fmtHint}}</div>
+        <sc-if value="{{showRes}}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="font-size:13px;font-weight:600">Resolução</div>
+            <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px">
+              <sc-for list="{{resOpts}}" as="r" hint-placeholder-count="2">
+                <button onClick="{{r.onClick}}" style="padding:10px 6px;border-radius:999px;border:1px solid {{r.border}};background:{{r.bg}};color:{{r.color}};font-size:12.5px;font-weight:{{r.weight}};cursor:pointer">{{r.label}}</button>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+        <button onClick="{{doExport}}" style="margin-top:4px;padding:15px;border:0;border-radius:999px;background:#EA0356;color:#fff;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 8px 20px rgba(234,3,86,.25)" style-hover="background:#C8024A">{{exportLabel}}</button>
+        <sc-if value="{{toast}}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;line-height:1.5;color:#6B6B6B;text-align:center">{{toast}}</div></sc-if>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  static BG = {
+    navy:{bg:'#001F45',border:'none',title:'#fff',hl:'#14D6E0',body:'#fff',muted:'#BFC7D1',accent:'#14D6E0',dot:'rgba(20,214,224,.55)',dark:true,band:'#007BC3',imgBg:'#405773'},
+    blue:{bg:'#007BC3',border:'none',title:'#001F45',hl:'#fff',body:'#fff',muted:'#fff',accent:'#001F45',dot:'rgba(255,255,255,.5)',dark:true,band:'#001F45',imgBg:'#405773'},
+    white:{bg:'#fff',border:'1.5px solid #007BC3',title:'#001F45',hl:'#007BC3',body:'#001F45',muted:'#405773',accent:'#007BC3',dot:'rgba(0,123,195,.4)',dark:false,band:'#001F45',imgBg:'#BFC7D1'},
+    gray:{bg:'#BFC7D1',border:'none',title:'#001F45',hl:'#007BC3',body:'#001F45',muted:'#405773',accent:'#007BC3',dot:'rgba(0,31,69,.3)',dark:false,band:'#001F45',imgBg:'#7E8FA1'},
+    green:{bg:'#009166',border:'none',title:'#fff',hl:'#001F45',body:'#fff',muted:'#fff',accent:'#001F45',dot:'rgba(255,255,255,.45)',dark:true,band:'#001F45',imgBg:'#405773'},
+    gradient:{bg:'linear-gradient(120deg,#001F45 35%,#007BC3)',border:'none',title:'#fff',hl:'#14D6E0',body:'#fff',muted:'#BFC7D1',accent:'#14D6E0',dot:'rgba(20,214,224,.55)',dark:true,band:'#001F45',imgBg:'#405773'}
+  };
+  static BGNAME = {navy:'azul-marinho',blue:'azul',white:'branco',gray:'cinza',green:'verde',gradient:'marinho → azul'};
+  static TAB = {teal:{bg:'#14D6E0',fg:'#001F45'},blue:{bg:'#007BC3',fg:'#fff'},navy:{bg:'#001F45',fg:'#fff'},gold:{bg:'#E3B449',fg:'#001F45'},violet:{bg:'#D752FD',fg:'#001F45'}};
+  static FONTS = [
+    {slot:'title',fam:'PruTitle',w:700,label:'Prudential Modern Bold SemiCondensed · títulos'},
+    {slot:'body',fam:'PruBody',w:400,label:'Gilroy Regular · texto'},
+    {slot:'bold',fam:'PruBody',w:700,label:'Gilroy Bold · negrito e abas'}
+  ];
+  static GF = 'https://fonts.googleapis.com/css2?family=Open+Sans:ital,wdth,wght@0,75..100,400..800;1,75..100,400..800&display=swap';
+
+  state = { loaded:false, brand:this.defBrand(), edition:this.defEdition(), cards:[], images:{}, selId:null, tab:'noticias', paste:'', drafts:[], fmt:'png', res:'hi', zoom:0.8, newsH:600, busy:'', toast:'' };
+  hist = []; fut = []; lastKey = null; lastT = 0;
+
+  defBrand(){ return { t1:'CONECTA', t2:'PEM', tagline:'A frequência semanal que\nte **conecta a resultados.**', disclaimer:'Esta News é de uso exclusivo do PEM.\nOs conteúdos destinados aos parceiros\nserão enviados em cards via WhatsApp.', footTag:'A frequência semanal que\nte conecta a resultados.', insta:'@PrudentialParcerias', slogan:'PRO AGORA. PRO AMANHÃ. PRO FUTURO', catColors:{'Campanha de Incentivo':'teal','Produtos':'blue','Operações':'navy','Acontece no PEM':'gold','Marketing':'gold','IWS para o PEM':'violet','Institucional':'violet'}, fonts:{} }; }
+  defEdition(){ return { number:'', date:'', hero:null, hfx:50, hfy:50, hz:1 }; }
+  uid(){ return Math.random().toString(36).slice(2,10); }
+  blankCard(){ return { id:this.uid(), category:'', title:'', titleCase:'upper', body:'', list:'', notice:'', quote:'', author:'', portraitOn:false, portrait:null, cta:'', ctaStyle:'text', validity:'', credit:'', caption:'', hasImage:false, image:null, imgW:0, imgH:0, fx:50, fy:50, zoom:1, fit:'cover', imgLayout:'auto', bg:'auto' }; }
+
+  // ---------- storage ----------
+  db(){ return this._db || (this._db = new Promise((res,rej)=>{ const r=indexedDB.open('digi-news-prudential',1); r.onupgradeneeded=()=>r.result.createObjectStore('kv'); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); })); }
+  async dbGet(k){ const db=await this.db(); return new Promise((res,rej)=>{ const q=db.transaction('kv').objectStore('kv').get(k); q.onsuccess=()=>res(q.result); q.onerror=()=>rej(q.error); }); }
+  async dbSet(k,v){ const db=await this.db(); return new Promise((res,rej)=>{ const tx=db.transaction('kv','readwrite'); tx.objectStore('kv').put(v,k); tx.oncomplete=()=>res(); tx.onerror=()=>rej(tx.error); }); }
+  async load(){
+    try{
+      const [cur,brand]=await Promise.all([this.dbGet('edition'),this.dbGet('brand')]);
+      const b={...this.defBrand(),...(brand||{})};
+      this.setState({loaded:true,brand:b,...(cur?{edition:{...this.defEdition(),...cur.edition},cards:cur.cards||[],images:cur.images||{},selId:(cur.cards&&cur.cards[0]&&cur.cards[0].id)||null}:{})});
+      this.applyFonts(b.fonts);
+    }catch(e){ this.setState({loaded:true}); this.flash('Armazenamento local indisponível: use “Salvar projeto” para não perder o trabalho.'); }
+  }
+  usedImages(cards,edition,images){ const keep={}; const add=k=>{ if(k&&images[k]) keep[k]=images[k]; }; cards.forEach(c=>{add(c.image);add(c.portrait);}); add(edition.hero); return keep; }
+  queueSave(){
+    clearTimeout(this._sv);
+    this._sv=setTimeout(async()=>{
+      const s=this.state;
+      try{ await this.dbSet('edition',{cards:s.cards,edition:s.edition,images:this.usedImages(s.cards,s.edition,s.images)}); await this.dbSet('brand',s.brand); }
+      catch(e){ this.flash('Não foi possível salvar automaticamente. Use “Salvar projeto”.'); }
+    },600);
+  }
+  flash(t){ clearTimeout(this._ft); this.setState({toast:t}); this._ft=setTimeout(()=>this.setState({toast:''}),6000); }
+
+  // ---------- lifecycle ----------
+  componentDidMount(){
+    this.load();
+    this.onKey=e=>{ const tag=(document.activeElement&&document.activeElement.tagName)||''; if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='z'&&!['INPUT','TEXTAREA','SELECT'].includes(tag)){ e.preventDefault(); e.shiftKey?this.redo():this.undo(); } };
+    window.addEventListener('keydown',this.onKey);
+    if(document.fonts) document.fonts.ready.then(()=>this.measure());
+    this.measure();
+  }
+  componentWillUnmount(){ window.removeEventListener('keydown',this.onKey); }
+  componentDidUpdate(){
+    this.measure();
+    const s=this.state, p=this._prev||{};
+    if(s.loaded&&(p.cards!==s.cards||p.edition!==s.edition||p.images!==s.images||p.brand!==s.brand)) this.queueSave();
+    this._prev={cards:s.cards,edition:s.edition,images:s.images,brand:s.brand};
+  }
+  measure(){ const el=document.querySelector('[data-newsroot]'); if(!el) return; const h=el.offsetHeight; if(Math.abs(h-this.state.newsH)>1) this.setState({newsH:h}); }
+
+  // ---------- history ----------
+  snap(){ return JSON.stringify({cards:this.state.cards,edition:this.state.edition}); }
+  commit(patch,key){
+    const now=Date.now();
+    if(!(key&&key===this.lastKey&&now-this.lastT<1500)){ this.hist.push(this.snap()); if(this.hist.length>200) this.hist.shift(); this.fut=[]; }
+    this.lastKey=key; this.lastT=now; this.setState(patch);
+  }
+  undo(){ if(!this.hist.length) return; this.fut.push(this.snap()); this.lastKey=null; this.setState(JSON.parse(this.hist.pop())); }
+  redo(){ if(!this.fut.length) return; this.hist.push(this.snap()); this.lastKey=null; this.setState(JSON.parse(this.fut.pop())); }
+  updCard(id,patch,key){ this.commit({cards:this.state.cards.map(c=>c.id===id?{...c,...patch}:c)},key); }
+  updEdition(patch,key){ this.commit({edition:{...this.state.edition,...patch}},key); }
+  updBrand(patch){ this.setState(s=>({brand:{...s.brand,...patch}})); }
+
+  // ---------- files ----------
+  readData(file){ return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=()=>rej(r.error); r.readAsDataURL(file); }); }
+  async readImage(file){
+    const url=await this.readData(file);
+    const img=await new Promise((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=()=>rej(new Error('img')); i.src=url; });
+    const w=img.naturalWidth||1000, h=img.naturalHeight||1000;
+    if(file.type==='image/svg+xml') return {url,w,h};
+    const max=2600, s=Math.min(1,max/Math.max(w,h));
+    if(s===1&&file.size<3e6) return {url,w,h};
+    const c=document.createElement('canvas'); c.width=Math.round(w*s); c.height=Math.round(h*s);
+    const g=c.getContext('2d'); g.fillStyle='#fff'; g.fillRect(0,0,c.width,c.height); g.drawImage(img,0,0,c.width,c.height);
+    return {url:c.toDataURL('image/jpeg',0.92),w:c.width,h:c.height};
+  }
+  async storeImage(e){
+    const f=e.target.files&&e.target.files[0]; e.target.value='';
+    if(!f) return null;
+    if(!/^image\//.test(f.type)){ this.flash('O arquivo enviado não é uma imagem.'); return null; }
+    try{ const r=await this.readImage(f); const key='img_'+this.uid(); this.setState(s=>({images:{...s.images,[key]:r.url}})); return {key,w:r.w,h:r.h}; }
+    catch(err){ this.flash('Não foi possível ler a imagem.'); return null; }
+  }
+  download(blob,name){ const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),4000); }
+  fileBase(){ const n=(this.state.edition.number||'').trim(); return 'news-conecta-pem'+(n?'-edicao-'+n.replace(/[^\w-]+/g,''):''); }
+  saveProject(){
+    const s=this.state;
+    const data={app:'digi-news-prudential',version:1,savedAt:new Date().toISOString(),edition:s.edition,cards:s.cards,images:this.usedImages(s.cards,s.edition,s.images),brand:s.brand};
+    this.download(new Blob([JSON.stringify(data)],{type:'application/json'}),this.fileBase()+'.json');
+    this.flash('Projeto salvo. Use “Abrir projeto” para continuar depois.');
+  }
+  async openProject(e){
+    const f=e.target.files&&e.target.files[0]; e.target.value=''; if(!f) return;
+    try{
+      const d=JSON.parse(await f.text());
+      if(d.app!=='digi-news-prudential'||!Array.isArray(d.cards)) throw new Error('fmt');
+      this.hist.push(this.snap());
+      const brand=d.brand?{...this.defBrand(),...d.brand}:this.state.brand;
+      this.setState({edition:{...this.defEdition(),...d.edition},cards:d.cards.map(c=>({...this.blankCard(),...c})),images:{...this.state.images,...(d.images||{})},brand,selId:d.cards[0]?d.cards[0].id:null});
+      this.applyFonts(brand.fonts); this.flash('Projeto aberto.');
+    }catch(err){ this.flash('Arquivo inválido: selecione um projeto salvo por este gerador.'); }
+  }
+  newEdition(){
+    if(this.state.cards.length&&!confirm('Iniciar uma nova edição? As notícias atuais serão removidas (dá para desfazer). Salve o projeto antes se quiser guardá-lo.')) return;
+    const n=parseInt(this.state.edition.number,10);
+    this.commit({cards:[],selId:null,edition:{...this.defEdition(),number:isNaN(n)?'':String(n+1),date:this.state.edition.date}});
+    this.setState({tab:'noticias'});
+  }
+
+  // ---------- fonts ----------
+  applyFonts(fonts){
+    let css='';
+    Component.FONTS.forEach(d=>{ const f=fonts&&fonts[d.slot]; if(f) css+=`@font-face{font-family:'${d.fam}';font-weight:${d.w};font-style:normal;src:url(${f.data});}`; });
+    let el=document.getElementById('pru-fonts'); if(!el){ el=document.createElement('style'); el.id='pru-fonts'; document.head.appendChild(el); }
+    el.textContent=css; this._userFontCSS=css;
+    if(document.fonts) document.fonts.ready.then(()=>this.measure());
+  }
+  async onFont(slot,e){
+    const f=e.target.files&&e.target.files[0]; e.target.value=''; if(!f) return;
+    if(!/\.(otf|ttf|woff2?)$/i.test(f.name)){ this.flash('Envie um arquivo de fonte .otf, .ttf ou .woff.'); return; }
+    const data=await this.readData(f);
+    const fonts={...this.state.brand.fonts,[slot]:{name:f.name,data}};
+    this.updBrand({fonts}); this.applyFonts(fonts);
+  }
+  async embedCSS(){
+    if(!this._gcss){
+      try{
+        const t=await (await fetch(Component.GF)).text();
+        const blocks=t.split('/*').filter(b=>/^\s*(latin|latin-ext)\s*\*\//.test(b));
+        let css=blocks.map(b=>b.replace(/^[^*]*\*\//,'')).join('\n');
+        const urls=[...new Set((css.match(/https:[^)'"]+/g)||[]))];
+        for(const u of urls){ const b=await (await fetch(u)).blob(); const d=await new Promise(r=>{const fr=new FileReader(); fr.onload=()=>r(fr.result); fr.readAsDataURL(b);}); css=css.split(u).join(d); }
+        this._gcss=css;
+      }catch(e){ this._gcss=''; }
+    }
+    return this._gcss+(this._userFontCSS||'');
+  }
+
+  // ---------- export ----------
+  async doExport(){
+    const s=this.state;
+    if(s.fmt==='json') return this.saveProject();
+    const pend=this.pendingCount();
+    if(pend&&!confirm(`Há ${pend} imagem(ns) pendente(s). Elas sairão como marcadores “IMAGEM PENDENTE”. Exportar mesmo assim?`)) return;
+    const prevSel=s.selId;
+    await new Promise(r=>this.setState({selId:null},r));
+    await new Promise(r=>setTimeout(r,60));
+    try{
+      if(s.fmt==='pdf') await this.exportPdf(); else await this.exportImage(s.fmt);
+    }catch(err){ console.error(err); this.flash('A exportação falhou. Tente a resolução padrão ou o PDF.'); }
+    this.setState({selId:prevSel,busy:''});
+  }
+  async exportImage(fmt){
+    const node=document.querySelector('[data-newsroot]');
+    const h=node.offsetHeight;
+    let ratio=this.state.res==='hi'?2742/600:2;
+    let note='';
+    if(h*ratio>32000){ ratio=Math.floor(32000/h*100)/100; note=` Altura grande: resolução ajustada para ${Math.round(600*ratio)} px de largura.`; }
+    this.setState({busy:'Gerando arquivo…'});
+    if(document.fonts) await document.fonts.ready;
+    const lib=await import('https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/+esm');
+    const fontEmbedCSS=await this.embedCSS();
+    const opts={pixelRatio:ratio,width:600,height:h,fontEmbedCSS,backgroundColor:'#ffffff',cacheBust:false};
+    await lib.toCanvas(node,{...opts,pixelRatio:0.2}).catch(()=>{});
+    const canvas=await lib.toCanvas(node,opts);
+    const type=fmt==='jpg'?'image/jpeg':'image/png';
+    const blob=await new Promise(r=>canvas.toBlob(r,type,0.92));
+    if(!blob) throw new Error('blob');
+    this.download(blob,`${this.fileBase()}.${fmt==='jpg'?'jpg':'png'}`);
+    this.flash(`Arquivo gerado: ${canvas.width} × ${canvas.height} px.${note}`);
+  }
+  async exportPdf(){
+    const node=document.querySelector('[data-newsroot]');
+    const h=Math.ceil(node.offsetHeight);
+    let el=document.getElementById('pru-page'); if(!el){ el=document.createElement('style'); el.id='pru-page'; document.head.appendChild(el); }
+    el.textContent=`@page{size:600px ${h}px;margin:0}`;
+    const old=document.title; document.title=this.fileBase();
+    if(document.fonts) await document.fonts.ready;
+    window.print();
+    setTimeout(()=>{ document.title=old; },1500);
+    this.flash('Na janela de impressão, escolha “Salvar como PDF”. Margens: nenhuma. Ative “Gráficos de plano de fundo”.');
+  }
+
+  // ---------- content helpers ----------
+  segs(text,baseC,hl,bodyW){
+    const out=[]; const re=/(\*\*[^*]+\*\*|==[^=]+==)/g; let last=0,m; text=text||'';
+    while((m=re.exec(text))){
+      if(m.index>last) out.push({t:text.slice(last,m.index),w:bodyW,c:baseC});
+      const tk=m[0];
+      if(tk.startsWith('**')) out.push({t:tk.slice(2,-2),w:700,c:baseC}); else out.push({t:tk.slice(2,-2),w:700,c:hl});
+      last=m.index+tk.length;
+    }
+    if(last<text.length) out.push({t:text.slice(last),w:bodyW,c:baseC});
+    return out;
+  }
+  labelSegs(line,baseC,hl){
+    const i=line.indexOf(':');
+    if(i>0&&i<60&&!/\*\*|==/.test(line.slice(0,i))) return [{t:line.slice(0,i+1),w:700,c:baseC},...this.segs(line.slice(i+1),baseC,hl,400)];
+    return this.segs(line,baseC,hl,400);
+  }
+  lines(t){ return (t||'').split(/\n+/).map(x=>x.trim()).filter(Boolean); }
+  bgAuto(cards){
+    const seq=['navy','blue','white','gray']; let k=0, prev=null; const out={};
+    cards.forEach(c=>{
+      let b;
+      if(c.bg!=='auto') b=c.bg;
+      else { b=seq[k%seq.length]; if(b===prev){ k++; b=seq[k%seq.length]; } if(c.hasImage&&b==='gray'){ k++; b=seq[k%seq.length]; } k++; }
+      out[c.id]=b; prev=b;
+    });
+    return out;
+  }
+  autoImgLayout(c){
+    const len=(c.body||'').length+(c.list||'').length+(c.quote||'').length+(c.notice||'').length;
+    const landscape=c.imgW&&c.imgH&&c.imgW/c.imgH>1.45;
+    if(len>760) return 'top';
+    if(landscape&&len>420) return 'top';
+    return 'right';
+  }
+  imgLayout(c){ if(!c.hasImage) return 'none'; return c.imgLayout==='auto'?this.autoImgLayout(c):c.imgLayout; }
+  tabColor(cat){ const cc=this.state.brand.catColors||{}; if(cc[cat]) return cc[cat]; const keys=['teal','blue','navy','gold','violet']; let h=0; for(const ch of cat) h=(h*31+ch.charCodeAt(0))>>>0; return keys[h%keys.length]; }
+  pendingCount(){ const s=this.state; let n=0; s.cards.forEach(c=>{ if(c.hasImage&&!c.image) n++; if(c.portraitOn&&!c.portrait) n++; }); if(!s.edition.hero) n++; return n; }
+
+  // ---------- paste ----------
+  parsePaste(){
+    const txt=this.state.paste||'';
+    const blocks=txt.split(/\n\s*-{3,}\s*(?:\n|$)/).map(b=>b.trim()).filter(Boolean);
+    const map=[[/^(se[cç][aã]o|categoria|editoria)$/i,'category'],[/^t[ií]tulo$/i,'title'],[/^(cita[cç][aã]o|depoimento)$/i,'quote'],[/^autor(ia)?$/i,'author'],[/^(chamada|cta)$/i,'cta'],[/^validade$/i,'validity'],[/^legenda$/i,'caption'],[/^(cr[eé]dito|fonte|nota)$/i,'credit'],[/^imagem$/i,'img'],[/^texto$/i,'text']];
+    const drafts=blocks.map(b=>{
+      const d=this.blankCard(); const body=[]; const list=[];
+      b.split('\n').forEach(raw=>{
+        const l=raw.trim(); if(!l) return;
+        const m=l.match(/^([A-Za-zÀ-ú ]{3,14}):\s*(.*)$/);
+        if(m){
+          const hit=map.find(([re])=>re.test(m[1].trim()));
+          if(hit){ const k=hit[1], v=m[2];
+            if(k==='img'){ d.hasImage=/^(sim|s|yes|x|com)/i.test(v); return; }
+            if(k==='text'){ if(v) body.push(v); return; }
+            if(k==='quote') { d.quote=v.replace(/^["“]|["”]$/g,'')===v?v:v; return; }
+            d[k]=d[k]?d[k]+'\n'+v:v; return; }
+          if(/^(importante|aten[cç][aã]o)$/i.test(m[1].trim())){ d.notice=d.notice?d.notice+'\n'+l:l; return; }
+        }
+        if(/^v[aá]lid[oa] para/i.test(l)&&!d.validity){ d.validity=l; return; }
+        if(/^[-•–]\s+/.test(l)){ list.push(l.replace(/^[-•–]\s+/,'')); return; }
+        if(!d.title){ d.title=l; return; }
+        body.push(l);
+      });
+      d.body=body.join('\n'); d.list=list.join('\n');
+      return d;
+    });
+    if(!drafts.length){ this.flash('Nenhum conteúdo encontrado. Cole o texto e separe as notícias com ---.'); return; }
+    this.setState({drafts});
+  }
+  updDraft(i,patch){ this.setState(s=>({drafts:s.drafts.map((d,k)=>k===i?{...d,...patch}:d)})); }
+  addDrafts(){
+    const d=this.state.drafts; if(!d.length) return;
+    this.commit({cards:[...this.state.cards,...d],selId:d[0].id});
+    this.setState({drafts:[],paste:'',tab:'noticias'});
+    this.flash(`${d.length} notícia(s) adicionada(s).`);
+  }
+
+  // ---------- scenarios ----------
+  scenario(n){
+    const S=['A partir deste mês, o processo passa a ser realizado de forma **100% digital** pelo portal do parceiro.','A mudança simplifica a jornada e reduz o tempo de análise das solicitações.','Os parceiros poderão acompanhar cada etapa em tempo real, com notificações automáticas.','Para mais informações, consulte o material de apoio disponível na biblioteca on-line.','A ação é válida para propostas emitidas entre os dias 01 e 30 do mês vigente.','Reforce com seus parceiros a importância de manter os dados cadastrais atualizados.','O novo fluxo traz mais agilidade, segurança e praticidade para o atendimento.','A campanha reconhece os profissionais que mais se destacaram no período.','Os critérios de elegibilidade consideram o volume de prêmio emitido e a manutenção da carteira.','Em caso de dúvidas, procure o seu gerente de relacionamento.','A iniciativa reforça o compromisso com a ==proteção das famílias== em todas as fases da vida.','Todos os materiais foram revisados para tornar a comunicação mais clara e objetiva.'];
+    const T=['Novo portal: solicitações ==100% digitais==','Campanha de incentivo: confira o ranking parcial','Mais clareza para facilitar a jornada do parceiro','Atualização nos critérios de elegibilidade','Ampliação da rede de atendimento','Semana de bem-estar: programação completa','Novo material de apoio na biblioteca on-line','Reconhecimento: destaques do trimestre','Prazos de fechamento do mês','Nova assistência disponível para clientes','Lembrete sobre cobrança de juros e multa','Kit de boas-vindas com novos critérios','Treinamento on-line para consultores','Calendário de eventos do próximo mês','Pesquisa de satisfação dos parceiros','Tempo de parceria também merece ser celebrado'];
+    const C=['Campanha de Incentivo','Produtos','Operações','Marketing','IWS para o PEM','Institucional'];
+    let seed=n*97+13; const rnd=()=>{ seed=(seed*9301+49297)%233280; return seed/233280; };
+    const para=k=>{ const o=[]; for(let i=0;i<k;i++) o.push(S[Math.floor(rnd()*S.length)]); return o.join(' '); };
+    const body=(np,ns)=>Array.from({length:np},()=>para(ns)).join('\n');
+    const mk=(i,o)=>({...this.blankCard(),category:C[Math.floor(i/2)%C.length],title:T[i%T.length],...o});
+    let out=[];
+    if(n===1) out=Array.from({length:8},(_,i)=>mk(i,{body:para(1+Math.floor(rnd()*2)),validity:i%3===0?'Válido para todos os canais.':''}));
+    if(n===2) out=Array.from({length:5},(_,i)=>mk(i*2,{body:body(2+i,3),list:i===1?'Capital segurado: até R$ 500 mil\nIdade de contratação: de 2 a 13 anos\nCarência: 3 meses':'',notice:i===2?'Importante: os agendamentos realizados com menos de 48h continuam sendo feitos pelo time de Atendimento.':'',quote:i===3?'Ampliar esse prazo significa oferecer mais alternativas para preservar a proteção dos nossos clientes.':'',author:i===3?'Nome Sobrenome, Analista de Parcerias Comerciais.':'',portraitOn:i===3}));
+    if(n===3) out=Array.from({length:6},(_,i)=>mk(i,{body:body(2,2+(i%2)),hasImage:i%2===0,imgLayout:i===4?'circle':'auto',cta:i===2?'Compartilhe os novos critérios com seus parceiros.':'',ctaStyle:i===2?'band':'text'}));
+    if(n===4) out=Array.from({length:14},(_,i)=>mk(i,{body:body(1+(i%3),2+(i%2)),hasImage:i%3===0,imgLayout:i%6===3?'top':'auto',cta:i%5===1?'Reforce esses diferenciais nas conversas com seus parceiros.':'',ctaStyle:i%5===1?'button':'text',validity:i%4===0?'Válido para todos os canais.':''}));
+    return out;
+  }
+  loadScenario(n){
+    if(this.state.cards.length&&!confirm('Substituir as notícias atuais pelo cenário de teste? (dá para desfazer)')) return;
+    const cards=this.scenario(n);
+    this.commit({cards,selId:cards[0]?cards[0].id:null,edition:{...this.state.edition,number:this.state.edition.number||'00',date:this.state.edition.date||'Teste'}});
+  }
+
+  select(id){
+    this.setState({selId:id,tab:'noticias'});
+    setTimeout(()=>{ const sc=document.querySelector('[data-scroller]'); const el=document.querySelector(`[data-card-id="${id}"]`); if(sc&&el){ const top=el.getBoundingClientRect().top-sc.getBoundingClientRect().top+sc.scrollTop-30; sc.scrollTo({top,behavior:'smooth'}); } },30);
+  }
+  move(i,d){ const a=[...this.state.cards]; const j=i+d; if(j<0||j>=a.length) return; [a[i],a[j]]=[a[j],a[i]]; this.commit({cards:a}); }
+
+  renderVals(){
+    const s=this.state, B=Component.BG, TB=Component.TAB;
+    const bgMap=this.bgAuto(s.cards);
+    const pill=(on)=>({border:on?'#EA0356':'#E3E3E3',bg:on?'#EA0356':'#fff',color:on?'#fff':'#1A1A1A',weight:on?600:500});
+
+    const cards=s.cards.map((c,i)=>{
+      const prev=s.cards[i-1];
+      const tabShow=!!c.category&&(!prev||prev.category!==c.category);
+      const t=TB[this.tabColor(c.category)];
+      const P=B[bgMap[c.id]]||B.navy;
+      const L=this.imgLayout(c);
+      const src=c.image?s.images[c.image]:'';
+      const ctaOn=!!(c.cta||'').trim();
+      const hasQuote=!!(c.quote||'').trim();
+      const portraitSrc=c.portraitOn&&c.portrait?s.images[c.portrait]:'';
+      return {
+        id:c.id, category:c.category, tabShow, tabBg:t.bg, tabFg:t.fg, mt:tabShow&&i>0?16:0,
+        onSel:()=>this.select(c.id), outline:c.id===s.selId?'2px solid #EA0356':'none',
+        bg:P.bg, border:P.border, titleColor:P.title, bodyColor:P.body, muted:P.muted, accent:P.accent, imgBg:P.imgBg,
+        isTop:L==='top', isRight:L==='right', isCircle:L==='circle',
+        imgSrc:src||'', imgPending:c.hasImage&&!src, fit:c.fit||'cover', fx:c.fx??50, fy:c.fy??50, zoom:c.zoom??1,
+        dots:L==='none'&&!hasQuote, dotColor:P.dot,
+        textW:L==='right'?'58%':'100%', minH:L==='right'?260:0,
+        titleSize:L==='right'?21:23, titlePad:L==='none'&&!hasQuote?90:0, tt:c.titleCase==='mixed'?'none':'uppercase',
+        titleSegs:this.segs(c.title||'Sem título',P.title,P.hl,700),
+        bodyCols:L==='circle'?'minmax(0,1fr) 160px':'minmax(0,1fr)',
+        paras:this.lines(c.body).map(p=>({segs:this.segs(p,P.body,P.hl,400)})),
+        hasList:!!this.lines(c.list).length, list:this.lines(c.list).map(l=>({segs:this.labelSegs(l,P.body,P.hl)})),
+        hasNotice:!!(c.notice||'').trim(), noticeSegs:this.labelSegs((c.notice||'').trim(),P.dark?'#001F45':'#fff',P.dark?'#007BC3':'#14D6E0'),
+        noticeBg:P.dark?'#fff':'#001F45', noticeFg:P.dark?'#001F45':'#fff', noticeIcon:P.dark?'#001F45':'#14D6E0', noticeIconFg:P.dark?'#fff':'#001F45',
+        hasQuote, quoteSegs:this.segs(c.quote,P.body,P.hl,700), author:c.author||'', portraitOn:!!c.portraitOn, portraitSrc:portraitSrc||'', portraitPending:!!c.portraitOn&&!portraitSrc,
+        quoteCols:c.portraitOn?'40px minmax(0,1fr) 120px':'40px minmax(0,1fr)',
+        cta:c.cta, ctaSegs:this.segs(c.cta,P.body,P.hl,700), ctaText:ctaOn&&c.ctaStyle==='text', ctaButton:ctaOn&&c.ctaStyle==='button', ctaBand:ctaOn&&c.ctaStyle==='band',
+        btnBg:P.dark?'#fff':'#007BC3', btnFg:P.dark?'#001F45':'#fff', bandBg:P.band,
+        caption:c.hasImage?(c.caption||''):'', credit:c.credit||'', validity:c.validity||''
+      };
+    });
+
+    const warnings=[];
+    if(!s.edition.number) warnings.push({text:'Informe o número da edição (aba Edição).',onClick:()=>this.setState({tab:'edicao'})});
+    if(!s.edition.hero) warnings.push({text:'Foto de capa do cabeçalho pendente (aba Edição).',onClick:()=>this.setState({tab:'edicao'})});
+    s.cards.forEach((c,i)=>{
+      const nm=`Notícia ${i+1}`; const go=()=>this.select(c.id);
+      if(!(c.title||'').trim()) warnings.push({text:`${nm}: sem título.`,onClick:go});
+      if(!(c.category||'').trim()) warnings.push({text:`${nm}: sem seção definida (fica sem aba).`,onClick:go});
+      if(c.hasImage&&!c.image) warnings.push({text:`${nm}: imagem indicada e ainda não enviada.`,onClick:go});
+      if(c.portraitOn&&!c.portrait) warnings.push({text:`${nm}: foto do autor da citação pendente.`,onClick:go});
+      const len=(c.body||'').length+(c.list||'').length;
+      if(len>1900) warnings.push({text:`${nm}: texto muito extenso para um card (${len} caracteres). Avalie dividir em dois cards, mantendo a redação.`,onClick:go});
+      if(this.imgLayout(c)==='right'&&len>900) warnings.push({text:`${nm}: texto longo com imagem lateral; a imagem ficará muito recortada. Prefira “Faixa no topo”.`,onClick:go});
+      if(this.imgLayout(c)==='circle'&&c.portraitOn) warnings.push({text:`${nm}: imagem em círculo e foto do autor no mesmo card; revise o equilíbrio.`,onClick:go});
+    });
+    if(s.newsH*2742/600>32000) warnings.push({text:`Edição muito longa (${s.newsH}px). A exportação em alta será reduzida automaticamente; considere dividir.`,onClick:()=>{}});
+
+    const sel=s.cards.find(c=>c.id===s.selId);
+    const selIdx=sel?s.cards.indexOf(sel):-1;
+    const blank=this.blankCard();
+    const sc=sel||blank;
+    const ex=[]; if(this.lines(sc.list).length) ex.push('lista'); if((sc.notice||'').trim()) ex.push('aviso'); if((sc.quote||'').trim()) ex.push('citação'); if((sc.cta||'').trim()) ex.push('chamada'); if(sc.validity) ex.push('validade'); if(sc.credit) ex.push('crédito');
+    const IL={top:'faixa no topo',right:'lateral direita',circle:'círculo'};
+    const selImg=sc.image?s.images[sc.image]:'';
+    const selV={...sc, n:selIdx+1, bgAuto:Component.BGNAME[bgMap[sc.id]||'navy']||'', imgAuto:IL[this.autoImgLayout(sc)], imgSrc:selImg||'', imgMissing:sc.hasImage&&!selImg, imgBtn:selImg?'Substituir imagem':'Enviar imagem', zoomPct:Math.round((sc.zoom||1)*100), zoomLabel:Math.round((sc.zoom||1)*100)+'%', contain:sc.fit==='contain', portraitSrc:sc.portrait?(s.images[sc.portrait]||''):'', portraitBtn:sc.portrait?'Substituir foto':'Enviar foto', extrasSummary:ex.length?'· '+ex.join(', '):'· nenhum'};
+    const id=sc.id;
+    const tx=k=>e=>this.updCard(id,{[k]:e.target.value},id+k);
+    const ed={
+      category:tx('category'),title:tx('title'),body:tx('body'),list:tx('list'),notice:tx('notice'),quote:tx('quote'),author:tx('author'),cta:tx('cta'),validity:tx('validity'),credit:tx('credit'),caption:tx('caption'),
+      bg:e=>this.updCard(id,{bg:e.target.value}), ctaStyle:e=>this.updCard(id,{ctaStyle:e.target.value}), imgLayout:e=>this.updCard(id,{imgLayout:e.target.value}),
+      hasImage:e=>this.updCard(id,{hasImage:e.target.checked}), portraitOn:e=>this.updCard(id,{portraitOn:e.target.checked}),
+      contain:e=>this.updCard(id,{fit:e.target.checked?'contain':'cover'}),
+      fx:e=>this.updCard(id,{fx:+e.target.value},id+'fx'), fy:e=>this.updCard(id,{fy:+e.target.value},id+'fy'), zoom:e=>this.updCard(id,{zoom:+e.target.value/100},id+'z'),
+      image:async e=>{ const r=await this.storeImage(e); if(r) this.updCard(id,{image:r.key,imgW:r.w,imgH:r.h,hasImage:true,fx:50,fy:50,zoom:1}); },
+      portrait:async e=>{ const r=await this.storeImage(e); if(r) this.updCard(id,{portrait:r.key,portraitOn:true}); },
+      removeImage:()=>this.updCard(id,{image:null,imgW:0,imgH:0})
+    };
+    const caseOpts=[['upper','CAIXA-ALTA'],['mixed','Caixa alta e baixa']].map(([v,l])=>({label:l,onClick:()=>this.updCard(id,{titleCase:v}),...pill(sc.titleCase===v)}));
+
+    const cardList=s.cards.map((c,i)=>{ const t=TB[this.tabColor(c.category)]; const on=c.id===s.selId; const has=c.hasImage; const ok=has&&c.image;
+      return {n:i+1,label:(c.title||'Sem título').replace(/\*\*|==/g,''),cat:c.category||'Sem seção',catBg:c.category?t.bg:'#EFEFEF',catFg:c.category?t.fg:'#6B6B6B',imgBadge:has?(ok?'Com imagem':'Imagem pendente'):'Sem imagem',imgBg:has?(ok?'#E8F6EF':'#FFF3D6'):'#F2F2F2',imgFg:has?(ok?'#0B6B44':'#7A5300'):'#6B6B6B',border:on?'#EA0356':'#EDEDED',bg:on?'#FFF5F8':'#fff',
+        onSel:()=>this.select(c.id), onUp:e=>{e.stopPropagation();this.move(i,-1);}, onDown:e=>{e.stopPropagation();this.move(i,1);},
+        onDup:e=>{e.stopPropagation(); const a=[...s.cards]; const cp={...c,id:this.uid()}; a.splice(i+1,0,cp); this.commit({cards:a,selId:cp.id});},
+        onDel:e=>{e.stopPropagation(); if(!confirm(`Excluir “${(c.title||'Sem título').replace(/\*\*|==/g,'')}”? (dá para desfazer)`)) return; const a=s.cards.filter(x=>x.id!==c.id); this.commit({cards:a,selId:s.selId===c.id?(a[i]||a[i-1]||{}).id||null:s.selId});}};
+    });
+
+    const cats=[...new Set([...Object.keys(s.brand.catColors||{}),...s.cards.map(c=>c.category).filter(Boolean)])];
+    const catRows=cats.map(name=>{ const col=this.tabColor(name); return {name,color:col,bg:TB[col].bg,fg:TB[col].fg,
+      onColor:e=>this.updBrand({catColors:{...s.brand.catColors,[name]:e.target.value}}),
+      onDel:()=>{ const cc={...s.brand.catColors}; delete cc[name]; this.updBrand({catColors:cc}); }}; });
+    const fontRows=Component.FONTS.map(f=>{ const up=s.brand.fonts&&s.brand.fonts[f.slot]; return {label:f.label,status:up?'Enviada: '+up.name:'Usando Open Sans (substituta)',stColor:up?'#0B6B44':'#8A8A8A',onFile:e=>this.onFont(f.slot,e)}; });
+
+    const tabs=[['noticias','Notícias'],['edicao','Edição'],['colar','Colar texto'],['marca','Marca e testes']].map(([k,l])=>({label:l,onClick:()=>this.setState({tab:k}),color:s.tab===k?'#EA0356':'#6B6B6B',weight:s.tab===k?600:500,line:s.tab===k?'#EA0356':'transparent'}));
+    const fmts=[['png','PNG'],['jpg','JPG'],['pdf','PDF'],['json','Projeto']].map(([k,l])=>({label:l,onClick:()=>this.setState({fmt:k}),...pill(s.fmt===k)}));
+    const hints={png:'Imagem única da edição completa, sem compressão. Ideal para envio e aprovação.',jpg:'Imagem única mais leve, para e-mail e WhatsApp.',pdf:'PDF vetorial de página única: textos nítidos e selecionáveis. Abre no Illustrator para ajustes finos.',json:'Arquivo do projeto com textos, imagens e ajustes, para reabrir e continuar a edição no gerador.'};
+    const resOpts=[['std','Padrão · 1200 px'],['hi','Alta · 2742 px']].map(([k,l])=>({label:l,onClick:()=>this.setState({res:k}),...pill(s.res===k)}));
+    const zooms=[[0.6,'60%'],[0.8,'80%'],[1,'100%']].map(([z,l])=>({label:l,onClick:()=>this.setState({zoom:z}),border:s.zoom===z?'#1A1A1A':'#E3E3E3',bg:s.zoom===z?'#1A1A1A':'#fff',color:s.zoom===z?'#fff':'#1A1A1A'}));
+    const eLabel={png:'Baixar PNG',jpg:'Baixar JPG',pdf:'Gerar PDF',json:'Baixar projeto'}[s.fmt];
+    const heroSrc=s.edition.hero?(s.images[s.edition.hero]||''):'';
+    const edEd={
+      number:e=>this.updEdition({number:e.target.value},'num'), date:e=>this.updEdition({date:e.target.value},'date'),
+      hfx:e=>this.updEdition({hfx:+e.target.value},'hfx'), hfy:e=>this.updEdition({hfy:+e.target.value},'hfy'), hz:e=>this.updEdition({hz:+e.target.value/100},'hz'),
+      hero:async e=>{ const r=await this.storeImage(e); if(r) this.updEdition({hero:r.key,hfx:50,hfy:50,hz:1}); },
+      removeHero:()=>this.updEdition({hero:null})
+    };
+    const bk=k=>e=>this.updBrand({[k]:e.target.value});
+    const edBrand={t1:bk('t1'),t2:bk('t2'),tagline:bk('tagline'),disclaimer:bk('disclaimer'),insta:bk('insta'),slogan:bk('slogan'),footTag:bk('footTag')};
+    const drafts=s.drafts.map((d,i)=>{ const x=[]; if(d.list) x.push('lista'); if(d.notice) x.push('aviso'); if(d.quote) x.push('citação'); if(d.author) x.push('autor'); if(d.cta) x.push('chamada'); if(d.validity) x.push('validade'); if(d.caption) x.push('legenda'); if(d.credit) x.push('crédito');
+      return {...d,n:i+1,extras:x.join(', '),onCat:e=>this.updDraft(i,{category:e.target.value}),onTitle:e=>this.updDraft(i,{title:e.target.value}),onBody:e=>this.updDraft(i,{body:e.target.value}),onImg:e=>this.updDraft(i,{hasImage:e.target.checked}),onDel:()=>this.setState(st=>({drafts:st.drafts.filter((_,k)=>k!==i)}))}; });
+
+    const ed0=s.edition;
+    return {
+      tabs, tabNoticias:s.tab==='noticias', tabEdicao:s.tab==='edicao', tabColar:s.tab==='colar', tabMarca:s.tab==='marca',
+      undo:()=>this.undo(), redo:()=>this.redo(), noUndo:!this.hist.length, noRedo:!this.fut.length, undoOp:this.hist.length?1:.45, redoOp:this.fut.length?1:.45,
+      cardCount:s.cards.length, noCards:!s.cards.length, cardList, hasSel:!!sel, sel:selV, ed, caseOpts, catNames:cats,
+      addCard:()=>{ const last=s.cards[s.cards.length-1]; const c={...this.blankCard(),category:last?last.category:''}; this.commit({cards:[...s.cards,c],selId:c.id}); },
+      edition:ed0, edEd, heroSrc, heroPending:!heroSrc, heroBtn:heroSrc?'Substituir foto':'Enviar foto', heroZoom:ed0.hz||1, heroZoomPct:Math.round((ed0.hz||1)*100),
+      edLine:`Edição #${ed0.number||'—'} | ${ed0.date||'—'}`,
+      newEdition:()=>this.newEdition(), saveProject:()=>this.saveProject(), openProject:e=>this.openProject(e),
+      paste:s.paste, onPaste:e=>this.setState({paste:e.target.value}), parsePaste:()=>this.parsePaste(), drafts, hasDrafts:!!s.drafts.length, draftCount:s.drafts.length, addDrafts:()=>this.addDrafts(), clearDrafts:()=>this.setState({drafts:[]}),
+      brand:s.brand, edBrand, catRows, fontRows,
+      scenarios:[1,2,3,4].map(n=>({label:['1 · Curtas sem imagem','2 · Longas e variadas','3 · Com e sem imagem','4 · Edição extensa'][n-1],onClick:()=>this.loadScenario(n)})),
+      resetLayouts:()=>this.commit({cards:s.cards.map(c=>({...c,imgLayout:'auto',bg:'auto'}))}),
+      taglineSegs:this.segs(s.brand.tagline,'#fff','#fff',400),
+      cards, warnings, hasWarnings:!!warnings.length, warnCount:warnings.length,
+      zoom:s.zoom, zooms, pw:Math.round(600*s.zoom), ph:Math.round(s.newsH*s.zoom), newsH:s.newsH,
+      fmts, fmtHint:hints[s.fmt], showRes:s.fmt==='png'||s.fmt==='jpg', resOpts, exportLabel:s.busy||eLabel, doExport:()=>this.doExport(), toast:s.toast
+    };
+  }
+}
+</script>
+</body>
+</html>
