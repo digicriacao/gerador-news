@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Gerador de News Prudential · Conecta PEM</title>
-<meta name="description" content="Monte a Conecta PEM da semana com a identidade Prudential: cole as notícias, gere imagens com IA, salve no histórico da equipe e exporte em PNG, JPG ou PDF.">
+<meta name="description" content="Monte a Conecta PEM e a Prudential Partners News com a identidade Prudential: cole as notícias, gere imagens com IA, salve no histórico da equipe e exporte em PNG, JPG ou PDF.">
 <meta name="theme-color" content="#001F45">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="pt_BR">
 <meta property="og:site_name" content="Digi · Estúdio Criativo">
 <meta property="og:title" content="Gerador de News Prudential · Conecta PEM">
-<meta property="og:description" content="Monte a Conecta PEM da semana com a identidade Prudential: cole as notícias, gere imagens com IA, salve no histórico da equipe e exporte em PNG, JPG ou PDF.">
+<meta property="og:description" content="Monte a Conecta PEM e a Prudential Partners News com a identidade Prudential: cole as notícias, gere imagens com IA, salve no histórico da equipe e exporte em PNG, JPG ou PDF.">
 <meta property="og:url" content="https://digicriacao.github.io/gerador-news/">
 <meta property="og:image" content="https://digicriacao.github.io/gerador-news/assets/og-image.png">
 <meta property="og:image:width" content="1200">
@@ -18,7 +18,7 @@
 <meta property="og:image:alt" content="Gerador de News Conecta PEM, da Prudential, com uma prévia da news diagramada">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Gerador de News Prudential · Conecta PEM">
-<meta name="twitter:description" content="Monte a Conecta PEM da semana com a identidade Prudential: cole as notícias, gere imagens com IA, salve no histórico da equipe e exporte em PNG, JPG ou PDF.">
+<meta name="twitter:description" content="Monte a Conecta PEM e a Prudential Partners News com a identidade Prudential: cole as notícias, gere imagens com IA, salve no histórico da equipe e exporte em PNG, JPG ou PDF.">
 <meta name="twitter:image" content="https://digicriacao.github.io/gerador-news/assets/og-image.png">
 <script src="./config.js"></script>
 <script src="./support.js"></script>
@@ -27,7 +27,7 @@
 <x-dc>
 <helmet>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Open+Sans:ital,wdth,wght@0,75..100,400..800;1,75..100,400..800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Open+Sans:ital,wdth,wght@0,75..100,300..800;1,75..100,300..800&display=swap" rel="stylesheet">
 <style>
 body{margin:0;background:#F4F4F4}
 a{color:#EA0356}a:hover{color:#B8003F}
@@ -50,7 +50,12 @@ input,textarea,select,button{font-family:inherit}
   <div data-noprint="" style="max-width:1280px;margin:0 auto 22px;display:flex;flex-direction:column;gap:6px">
     <div style="font-size:11px;font-weight:700;letter-spacing:.14em;color:#EA0356">ESTÚDIO CRIATIVO</div>
     <div style="font-size:26px;font-weight:700;letter-spacing:-.01em">Gerador de News Prudential</div>
-    <div style="font-size:14px;line-height:1.6;color:#6B6B6B;max-width:680px">Monte a Conecta PEM da semana: cadastre ou cole as notícias, envie as imagens e baixe a edição diagramada com a identidade da Prudential.</div>
+    <div style="font-size:14px;line-height:1.6;color:#6B6B6B;max-width:680px">{{introText}}</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+      <sc-for list="{{modelOpts}}" as="m" hint-placeholder-count="2">
+        <button onClick="{{m.onClick}}" style="padding:13px 24px;border-radius:12px;border:1px solid {{m.border}};background:{{m.bg}};color:{{m.color}};font-size:14px;font-weight:700;cursor:pointer;box-shadow:{{m.shadow}}">{{m.label}}</button>
+      </sc-for>
+    </div>
   </div>
 
   <div data-grid="" style="max-width:1280px;margin:0 auto;display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start">
@@ -284,9 +289,22 @@ input,textarea,select,button{font-family:inherit}
               <input value="{{edition.number}}" onChange="{{edEd.number}}" placeholder="Ex: 21" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;color:#1A1A1A">
             </label>
             <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Data
-              <input value="{{edition.date}}" onChange="{{edEd.date}}" placeholder="Ex: Out.2026" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;color:#1A1A1A">
+              <input value="{{edition.date}}" onChange="{{edEd.date}}" placeholder="{{datePh}}" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;color:#1A1A1A">
             </label>
           </div>
+          <sc-if value="{{isPartners}}" hint-placeholder-val="{{ false }}">
+            <div style="border:1px solid #EFEFEF;border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:12px">
+              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:12.5px">
+                <span style="font-size:13px;font-weight:600;margin-right:4px">Cabeçalho:</span>
+                <sc-for list="{{themeOpts}}" as="o" hint-placeholder-count="2">
+                  <button onClick="{{o.onClick}}" style="padding:6px 12px;border-radius:999px;border:1px solid {{o.border}};background:{{o.bg}};color:{{o.color}};font-size:12px;cursor:pointer">{{o.label}}</button>
+                </sc-for>
+              </div>
+              <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Frase do cabeçalho nesta edição <span style="font-weight:400;color:#8A8A8A;font-size:11.5px">Deixe vazio para usar a frase padrão (aba Marca). Quebra de linha é respeitada.</span>
+                <textarea rows="2" value="{{edition.pTagline}}" onChange="{{edEd.pTagline}}" placeholder="{{brand.partners.tagline}}" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;resize:vertical;color:#1A1A1A"></textarea>
+              </label>
+            </div>
+          </sc-if>
           <div style="border:1px solid #EFEFEF;border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:12px">
             <div style="font-size:13px;font-weight:600">Foto de capa (círculo do cabeçalho)</div>
             <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
@@ -444,7 +462,20 @@ input,textarea,select,button{font-family:inherit}
       </sc-if>
       <sc-if value="{{tabMarca}}" hint-placeholder-val="{{ false }}">
         <div style="padding:20px;display:flex;flex-direction:column;gap:18px">
-          <div style="font-size:12px;color:#8A8A8A;line-height:1.5">Configuração fixa, reaproveitada em todas as edições.</div>
+          <div style="font-size:12px;color:#8A8A8A;line-height:1.5">Configuração fixa da <b>{{modelName}}</b>, reaproveitada em todas as edições. Cores das abas, fontes e estilo da IA valem para o modelo escolhido no topo.</div>
+          <sc-if value="{{isPartners}}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Título do cabeçalho <span style="font-weight:400;color:#8A8A8A;font-size:11.5px">Uma palavra por linha. A primeira linha sai em branco (ou azul-marinho no cabeçalho claro); as demais, em azul.</span><textarea rows="3" value="{{brand.partners.title}}" onChange="{{edBrandP.title}}" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;resize:vertical;color:#1A1A1A"></textarea></label>
+              <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Frase padrão do cabeçalho<textarea rows="2" value="{{brand.partners.tagline}}" onChange="{{edBrandP.tagline}}" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;resize:vertical;color:#1A1A1A"></textarea></label>
+              <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Frase do rodapé<textarea rows="2" value="{{brand.partners.footText}}" onChange="{{edBrandP.footText}}" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;resize:vertical;color:#1A1A1A"></textarea></label>
+              <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px">
+                <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Assinatura do rodapé <span style="font-weight:400;color:#8A8A8A;font-size:11.5px">Vazio = não exibe.</span><input value="{{brand.partners.slogan}}" onChange="{{edBrandP.slogan}}" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;color:#1A1A1A"></label>
+                <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Instagram <span style="font-weight:400;color:#8A8A8A;font-size:11.5px">Vazio = não exibe.</span><input value="{{brand.partners.insta}}" onChange="{{edBrandP.insta}}" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;color:#1A1A1A"></label>
+              </div>
+            </div>
+          </sc-if>
+          <sc-if value="{{isConecta}}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:18px">
           <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px">
             <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Nome (linha 1)<input value="{{brand.t1}}" onChange="{{edBrand.t1}}" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;color:#1A1A1A"></label>
             <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Nome (linha 2)<input value="{{brand.t2}}" onChange="{{edBrand.t2}}" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;color:#1A1A1A"></label>
@@ -456,6 +487,8 @@ input,textarea,select,button{font-family:inherit}
             <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Assinatura do rodapé<input value="{{brand.slogan}}" onChange="{{edBrand.slogan}}" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;color:#1A1A1A"></label>
           </div>
           <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:500">Frase do rodapé<textarea rows="2" value="{{brand.footTag}}" onChange="{{edBrand.footTag}}" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;resize:vertical;color:#1A1A1A"></textarea></label>
+          </div>
+          </sc-if>
 
           <div style="display:flex;flex-direction:column;gap:8px;border-top:1px solid #EFEFEF;padding-top:16px">
             <div style="font-size:13px;font-weight:600">Cores das abas por seção</div>
@@ -532,6 +565,22 @@ input,textarea,select,button{font-family:inherit}
           <div data-scaleinner="" style="position:absolute;left:0;top:0;transform:scale({{zoom}});transform-origin:0 0">
 
             <div data-newsroot="" style="width:600px;background:#fff;position:relative;overflow:hidden;font-family:'PruBody','Open Sans',Arial,sans-serif;color:#001F45">
+              <sc-if value="{{isPartners}}" hint-placeholder-val="{{ false }}">
+              <div style="position:relative;height:340px;background:{{hd.bg}};overflow:hidden">
+                <div style="position:absolute;left:338px;top:0;width:262px;height:300px;background-image:radial-gradient(circle,#1F80CC 1.7px,transparent 2.2px);background-size:19px 19px;background-position:7px 9px;-webkit-mask-image:linear-gradient(to bottom,#000 72%,transparent);mask-image:linear-gradient(to bottom,#000 72%,transparent)"></div>
+                <img src="{{hd.logo}}" alt="Prudential" style="position:absolute;left:34px;top:26px;width:168px;height:auto">
+                <div style="position:absolute;left:100px;top:69px;font-size:12px;font-weight:400;color:{{hd.sub}};white-space:nowrap">{{pEdLine}}</div>
+                <div style="position:absolute;left:40px;top:98px;font-family:'PruTitle','Open Sans',Arial,sans-serif;font-weight:700;font-stretch:75%;font-size:51px;line-height:1.08;letter-spacing:.03em;text-transform:uppercase;white-space:nowrap">
+                  <sc-for list="{{pTitle}}" as="l" hint-placeholder-count="3"><div style="color:{{l.c}}">{{l.t}}</div></sc-for>
+                </div>
+                <div style="position:absolute;left:42px;top:{{hd.tagTop}}px;width:300px;font-size:16px;line-height:1.25;font-weight:300;letter-spacing:.01em;color:{{hd.tag}};white-space:pre-line">{{pTagline}}</div>
+                <div style="position:absolute;left:318px;top:44px;width:264px;height:264px;border-radius:50%;overflow:hidden;background:{{hd.circle}}">
+                  <sc-if value="{{heroSrc}}" hint-placeholder-val="{{ false }}"><img src="{{heroSrc}}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:{{edition.hfx}}% {{edition.hfy}}%;transform:scale({{heroZoom}});transform-origin:{{edition.hfx}}% {{edition.hfy}}%"></sc-if>
+                  <sc-if value="{{heroPending}}" hint-placeholder-val="{{ true }}"><div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(255,255,255,.16) 0 8px,rgba(255,255,255,.04) 8px 16px);display:flex;align-items:center;justify-content:center;font-family:'Open Sans',Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;color:#fff">FOTO DE CAPA PENDENTE</div></sc-if>
+                </div>
+              </div>
+              </sc-if>
+              <sc-if value="{{isConecta}}" hint-placeholder-val="{{ true }}">
               <div style="position:relative;height:372px;background:#001F45;overflow:visible;z-index:1">
                 <div style="position:absolute;left:333px;top:0;width:267px;height:321px;background-image:radial-gradient(circle,#007BC3 1.5px,transparent 1.9px);background-size:15px 15px;background-position:7px 7px"></div>
                 <img src="assets/logo-prudential-branco.png" alt="Prudential" style="position:absolute;left:23px;top:36px;width:128px;height:auto">
@@ -551,6 +600,7 @@ input,textarea,select,button{font-family:inherit}
                   <sc-if value="{{heroPending}}" hint-placeholder-val="{{ true }}"><div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(255,255,255,.14) 0 8px,rgba(255,255,255,.04) 8px 16px);display:flex;align-items:center;justify-content:center;font-family:'Open Sans',Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;color:#fff">FOTO DE CAPA PENDENTE</div></sc-if>
                 </div>
               </div>
+              </sc-if>
 
               <div style="display:flex;flex-direction:column;gap:14px;padding:36px 22px 8px">
                 <sc-for list="{{cards}}" as="c" hint-placeholder-count="0">
@@ -670,6 +720,15 @@ input,textarea,select,button{font-family:inherit}
                 </sc-if>
               </div>
 
+              <sc-if value="{{isPartners}}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:22px;padding:32px 30px 28px;background:#fff">
+                <sc-if value="{{brand.partners.footText}}" hint-placeholder-val="{{ true }}"><div style="font-size:16.5px;line-height:1.3;font-weight:300;color:#2A86C8;white-space:pre-line">{{brand.partners.footText}}</div></sc-if>
+                <sc-if value="{{brand.partners.slogan}}" hint-placeholder-val="{{ true }}"><div style="font-family:'PruTitle','Open Sans',Arial,sans-serif;font-weight:700;font-stretch:75%;font-size:14.5px;letter-spacing:.01em;color:#0D2143;text-transform:uppercase">{{brand.partners.slogan}}</div></sc-if>
+                <sc-if value="{{brand.partners.insta}}" hint-placeholder-val="{{ true }}"><div style="display:flex;gap:10px;align-items:center"><img src="assets/icon-instagram.png" alt="Instagram" style="width:26px;height:26px"><span style="font-size:13.5px;font-weight:300;color:#5A5F68">{{brand.partners.insta}}</span></div></sc-if>
+              </div>
+              </sc-if>
+              <sc-if value="{{isConecta}}" hint-placeholder-val="{{ true }}">
+              <div>
               <div style="display:flex;justify-content:space-between;align-items:center;gap:20px;padding:34px 30px 30px">
                 <div style="display:flex;flex-direction:column;gap:8px">
                   <div style="font-family:'PruTitle','Open Sans',Arial,sans-serif;font-weight:700;font-stretch:75%;font-size:40px;line-height:.9;letter-spacing:-.01em;text-transform:uppercase;color:#001F45">{{brand.t1}} <span style="color:#14D6E0">{{brand.t2}}</span></div>
@@ -684,6 +743,8 @@ input,textarea,select,button{font-family:inherit}
                 <img src="assets/logo-prudential-branco.png" alt="Prudential" style="width:108px;height:auto">
                 <div style="font-family:'PruTitle','Open Sans',Arial,sans-serif;font-weight:700;font-stretch:75%;font-size:13px;color:#fff;text-transform:uppercase;white-space:nowrap">{{brand.slogan}}</div>
               </div>
+              </div>
+              </sc-if>
             </div>
 
           </div>
@@ -809,16 +870,24 @@ class Component extends DCLogic {
   ];
   static AI_STYLE = 'Fotografia realista e corporativa para a comunicação interna de uma seguradora de vida no Brasil. Luz natural, ambiente profissional e acolhedor, pessoas brasileiras diversas e naturais, sem poses forçadas. Paleta com predominância de azul-marinho, azul e tons neutros. Não inclua textos, letras, números, logotipos nem marcas d\'água na imagem.';
   static H2I = 'https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/+esm';
-  static GF = 'https://fonts.googleapis.com/css2?family=Open+Sans:ital,wdth,wght@0,75..100,400..800;1,75..100,400..800&display=swap';
+  static GF = 'https://fonts.googleapis.com/css2?family=Open+Sans:ital,wdth,wght@0,75..100,300..800;1,75..100,300..800&display=swap';
+  static MODELS = { conecta:{name:'Conecta PEM',label:'News Conecta PEM',file:'news-conecta-pem',dbKey:'edition',intro:'Monte a Conecta PEM da semana: cadastre ou cole as notícias, envie as imagens e baixe a edição diagramada com a identidade da Prudential.',datePh:'Ex: Out.2026'},
+    partners:{name:'Prudential Partners News',label:'Prudential Partners News',file:'prudential-partners-news',dbKey:'edition_partners',intro:'Monte a Prudential Partners News: cadastre ou cole as notícias, envie as imagens e baixe a edição diagramada com a identidade da Prudential.',datePh:'Ex: Julho de 2026'} };
 
-  state = { loaded:false, brand:this.defBrand(), edition:this.defEdition(), cards:[], images:{}, selId:null, tab:'noticias', paste:'', drafts:[], fmt:'png', res:'hi', zoom:0.8, newsH:600, busy:'', toast:'',
+  state = { loaded:false, model:this.initModel(), brand:this.defBrand(), edition:this.defEdition(), cards:[], images:{}, selId:null, tab:'noticias', paste:'', drafts:[], fmt:'png', res:'hi', zoom:0.8, newsH:600, busy:'', toast:'',
     conn:this.initConn(), remote:null, savingRemote:false, hl:{items:[],loading:false,trash:false,query:'',loadedAt:0}, thumbs:{},
     ai:{open:false,key:'',target:'card',cardId:null,provider:'openai',aspect:'landscape',quality:'medium',styleOn:true,input:'',busy:false,msgs:[],baseIdx:-1} };
-  aiSess = {}; _hc = {}; _optim = {};
+  aiSess = {}; _hc = {}; _optim = {}; ws = {};
   hist = []; fut = []; lastKey = null; lastT = 0;
 
-  defBrand(){ return { t1:'CONECTA', t2:'PEM', tagline:'A frequência semanal que\nte **conecta a resultados.**', disclaimer:'Esta News é de uso exclusivo do PEM.\nOs conteúdos destinados aos parceiros\nserão enviados em cards via WhatsApp.', footTag:'A frequência semanal que\nte conecta a resultados.', insta:'@PrudentialParcerias', slogan:'PRO AGORA. PRO AMANHÃ. PRO FUTURO', aiStyle:Component.AI_STYLE, catColors:{'Campanha de Incentivo':'teal','Produtos':'blue','Operações':'navy','Acontece no PEM':'gold','Marketing':'gold','IWS para o PEM':'violet','Institucional':'violet'}, fonts:{} }; }
-  defEdition(){ return { number:'', date:'', hero:null, hfx:50, hfy:50, hz:1, histName:'' }; }
+  defBrand(){ return { t1:'CONECTA', t2:'PEM', tagline:'A frequência semanal que\nte **conecta a resultados.**', disclaimer:'Esta News é de uso exclusivo do PEM.\nOs conteúdos destinados aos parceiros\nserão enviados em cards via WhatsApp.', footTag:'A frequência semanal que\nte conecta a resultados.', insta:'@PrudentialParcerias', slogan:'PRO AGORA. PRO AMANHÃ. PRO FUTURO', aiStyle:Component.AI_STYLE,
+    partners:{ title:'PRUDENTIAL\nPARTNERS\nNEWS', tagline:'Juntos com a Prudential, transformando\ninformação em negócios.', footText:'Para saber mais, entre em contato com seu gerente de parcerias.', slogan:'PRO AGORA. PRO AMANHÃ. PRO FUTURO.', insta:'@PrudentialParcerias', catColors:{} },
+    catColors:{'Campanha de Incentivo':'teal','Produtos':'blue','Operações':'navy','Acontece no PEM':'gold','Marketing':'gold','IWS para o PEM':'violet','Institucional':'violet'}, fonts:{} }; }
+  defEdition(){ return { number:'', date:'', hero:null, hfx:50, hfy:50, hz:1, histName:'', pTheme:'dark', pTagline:'' }; }
+  initModel(){ try{ return localStorage.getItem('pru.model')==='partners'?'partners':'conecta'; }catch(e){ return 'conecta'; } }
+  mergeBrand(b){ const d=this.defBrand(); const r={...d,...(b||{})}; r.partners={...d.partners,...((b&&b.partners)||{})}; return r; }
+  dbKey(m){ return Component.MODELS[m||this.state.model].dbKey; }
+  blankWs(){ return {cards:[],edition:this.defEdition(),remote:null,selId:null,hist:[],fut:[]}; }
   uid(){ return Math.random().toString(36).slice(2,10); }
   blankCard(){ return { id:this.uid(), category:'', title:'', titleCase:'upper', body:'', list:'', notice:'', quote:'', author:'', portraitOn:false, portrait:null, cta:'', ctaStyle:'text', validity:'', credit:'', caption:'', hasImage:false, image:null, imgW:0, imgH:0, fx:50, fy:50, zoom:1, fit:'cover', imgLayout:'auto', bg:'auto', kind:'content', bannerFull:false, audience:'', audiencePos:'center', audienceColor:'auto' }; }
 
@@ -828,9 +897,12 @@ class Component extends DCLogic {
   async dbSet(k,v){ const db=await this.db(); return new Promise((res,rej)=>{ const tx=db.transaction('kv','readwrite'); tx.objectStore('kv').put(v,k); tx.oncomplete=()=>res(); tx.onerror=()=>rej(tx.error); }); }
   async load(){
     try{
-      const [cur,brand]=await Promise.all([this.dbGet('edition'),this.dbGet('brand')]);
-      const b={...this.defBrand(),...(brand||{})};
-      this.setState({loaded:true,brand:b,...(cur?{edition:{...this.defEdition(),...cur.edition},cards:(cur.cards||[]).map(c=>({...this.blankCard(),...c})),images:cur.images||{},remote:cur.remote||null,selId:(cur.cards&&cur.cards[0]&&cur.cards[0].id)||null}:{})});
+      const [cur,curP,brand]=await Promise.all([this.dbGet('edition'),this.dbGet('edition_partners'),this.dbGet('brand')]);
+      const b=this.mergeBrand(brand);
+      const mk=r=>r?{cards:(r.cards||[]).map(c=>({...this.blankCard(),...c})),edition:{...this.defEdition(),...r.edition},remote:r.remote||null,selId:(r.cards&&r.cards[0]&&r.cards[0].id)||null,hist:[],fut:[]}:this.blankWs();
+      this.ws={conecta:mk(cur),partners:mk(curP)};
+      const w=this.ws[this.state.model];
+      this.setState({loaded:true,brand:b,images:{...((cur&&cur.images)||{}),...((curP&&curP.images)||{})},cards:w.cards,edition:w.edition,remote:w.remote,selId:w.selId});
       this.applyFonts(b.fonts);
     }catch(e){ this.setState({loaded:true}); this.flash('Armazenamento local indisponível: use “Salvar projeto” para não perder o trabalho.'); }
   }
@@ -839,7 +911,7 @@ class Component extends DCLogic {
     clearTimeout(this._sv);
     this._sv=setTimeout(async()=>{
       const s=this.state;
-      try{ await this.dbSet('edition',{cards:s.cards,edition:s.edition,images:this.usedImages(s.cards,s.edition,s.images),remote:s.remote}); await this.dbSet('brand',s.brand); }
+      try{ await this.dbSet(this.dbKey(s.model),{cards:s.cards,edition:s.edition,images:this.usedImages(s.cards,s.edition,s.images),remote:s.remote}); await this.dbSet('brand',s.brand); }
       catch(e){ this.flash('Não foi possível salvar automaticamente. Use “Salvar projeto”.'); }
     },600);
   }
@@ -899,10 +971,10 @@ class Component extends DCLogic {
     catch(err){ this.flash('Não foi possível ler a imagem.'); return null; }
   }
   download(blob,name){ const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),4000); }
-  fileBase(){ const n=(this.state.edition.number||'').trim(); return 'news-conecta-pem'+(n?'-edicao-'+n.replace(/[^\w-]+/g,''):''); }
+  fileBase(){ const n=(this.state.edition.number||'').trim(); return Component.MODELS[this.state.model].file+(n?'-edicao-'+n.replace(/[^\w-]+/g,''):''); }
   saveProject(){
     const s=this.state;
-    const data={app:'digi-news-prudential',version:1,savedAt:new Date().toISOString(),edition:s.edition,cards:s.cards,images:this.usedImages(s.cards,s.edition,s.images),brand:s.brand};
+    const data={app:'digi-news-prudential',version:1,model:s.model,savedAt:new Date().toISOString(),edition:s.edition,cards:s.cards,images:this.usedImages(s.cards,s.edition,s.images),brand:s.brand};
     this.download(new Blob([JSON.stringify(data)],{type:'application/json'}),this.fileBase()+'.json');
     this.flash('Projeto salvo. Use “Abrir projeto” para continuar depois.');
   }
@@ -911,8 +983,9 @@ class Component extends DCLogic {
     try{
       const d=JSON.parse(await f.text());
       if(d.app!=='digi-news-prudential'||!Array.isArray(d.cards)) throw new Error('fmt');
+      if((d.model||'conecta')!==this.state.model) this.switchModel(d.model||'conecta');
       this.hist.push(this.snap());
-      const brand=d.brand?{...this.defBrand(),...d.brand}:this.state.brand;
+      const brand=d.brand?this.mergeBrand({...d.brand,fonts:{...(this.state.brand.fonts||{}),...(d.brand.fonts||{})}}):this.state.brand;
       this.setState({edition:{...this.defEdition(),...d.edition},cards:d.cards.map(c=>({...this.blankCard(),...c})),images:{...this.state.images,...(d.images||{})},brand,remote:null,selId:d.cards[0]?d.cards[0].id:null});
       this.applyFonts(brand.fonts); this.flash('Projeto aberto.');
     }catch(err){ this.flash('Arquivo inválido: selecione um projeto salvo por este gerador.'); }
@@ -1035,7 +1108,9 @@ class Component extends DCLogic {
     return 'right';
   }
   imgLayout(c){ if(c.kind==='banner') return 'banner'; if(!c.hasImage) return 'none'; return c.imgLayout==='auto'?this.autoImgLayout(c):c.imgLayout; }
-  tabColor(cat){ const cc=this.state.brand.catColors||{}; if(cc[cat]) return cc[cat]; const keys=['teal','blue','navy','gold','violet']; let h=0; for(const ch of cat) h=(h*31+ch.charCodeAt(0))>>>0; return keys[h%keys.length]; }
+  catMap(){ const b=this.state.brand; return (this.state.model==='partners'?(b.partners&&b.partners.catColors):b.catColors)||{}; }
+  setCatMap(cc){ if(this.state.model==='partners') this.updBrand({partners:{...this.state.brand.partners,catColors:cc}}); else this.updBrand({catColors:cc}); }
+  tabColor(cat){ const cc=this.catMap(); if(cc[cat]) return cc[cat]; if(this.state.model==='partners') return 'blue'; const keys=['teal','blue','navy','gold','violet']; let h=0; for(const ch of cat) h=(h*31+ch.charCodeAt(0))>>>0; return keys[h%keys.length]; }
   pendingCount(){ const s=this.state; let n=0; s.cards.forEach(c=>{ if(c.kind==='banner'){ if(!c.image) n++; return; } if(c.hasImage&&!c.image) n++; if(c.portraitOn&&!c.portrait) n++; }); if(!s.edition.hero) n++; return n; }
 
   // ---------- paste ----------
@@ -1102,8 +1177,9 @@ class Component extends DCLogic {
   // ---------- conexão com o servidor ----------
   lsGet(k){ try{ return localStorage.getItem(k)||''; }catch(e){ return ''; } }
   lsSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
-  cfgUrl(){ const c=window.NEWS_CONFIG||{}; return (c.apiUrl||'').trim().replace(/\/+$/,''); }
-  initConn(){ const url=this.cfgUrl()||this.lsGet('pru.apiUrl'); const key=this.lsGet('pru.teamKey'), user=this.lsGet('pru.user');
+  normUrl(u){ u=String(u||'').trim().replace(/\s+/g,''); if(!u) return ''; if(!/^https?:\/\//i.test(u)) u='https://'+u.replace(/^\/+/,''); return u.replace(/\/+$/,'').replace(/\/api(\/health)?$/i,''); }
+  cfgUrl(){ const c=window.NEWS_CONFIG||{}; return this.normUrl(c.apiUrl); }
+  initConn(){ const url=this.cfgUrl()||this.normUrl(this.lsGet('pru.apiUrl')); const key=this.lsGet('pru.teamKey'), user=this.lsGet('pru.user');
     return { url, key, user, status:null, checking:false, error:'', editing:false, fUrl:url, fKey:key, fUser:user }; }
   setConn(patch){ this.setState(s=>({conn:{...s.conn,...patch}})); }
   connOk(){ const c=this.state.conn, st=c.status; return !!(st&&st.ok&&(!st.authRequired||st.authOk)&&c.user&&!c.editing); }
@@ -1114,9 +1190,8 @@ class Component extends DCLogic {
     catch(e){ this.setConn({error:'Não foi possível falar com o servidor do histórico agora.'}); }
   }
   async connect(){
-    const c=this.state.conn; const url=(this.cfgUrl()||c.fUrl||'').trim().replace(/\/+$/,''); const key=(c.fKey||'').trim(); const user=(c.fUser||'').trim();
+    const c=this.state.conn; const url=this.cfgUrl()||this.normUrl(c.fUrl); const key=(c.fKey||'').trim(); const user=(c.fUser||'').trim();
     if(!url) return this.setConn({error:'Informe o endereço do servidor.'});
-    if(!/^https?:\/\//.test(url)) return this.setConn({error:'O endereço precisa começar com https://'});
     if(!user) return this.setConn({error:'Informe o seu nome.'});
     this.setConn({checking:true,error:''});
     try{
@@ -1143,26 +1218,40 @@ class Component extends DCLogic {
   fmtDate(iso){ if(!iso) return '—'; try{ return new Date(iso).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}); }catch(e){ return iso; } }
   plain(t){ return (t||'').replace(/\*\*|==/g,'').replace(/\s+/g,' ').trim(); }
 
+  // ---------- modelos de news ----------
+  switchModel(m){
+    const s=this.state; if(!Component.MODELS[m]||m===s.model) return;
+    clearTimeout(this._sv);
+    this.ws[s.model]={cards:s.cards,edition:s.edition,remote:s.remote,selId:s.selId,hist:this.hist,fut:this.fut};
+    if(s.loaded) this.dbSet(this.dbKey(s.model),{cards:s.cards,edition:s.edition,images:this.usedImages(s.cards,s.edition,s.images),remote:s.remote}).catch(()=>{});
+    const w=this.ws[m]||this.blankWs();
+    this.hist=w.hist||[]; this.fut=w.fut||[]; this.lastKey=null;
+    this.lsSet('pru.model',m);
+    this.setState({model:m,cards:w.cards,edition:w.edition,remote:w.remote,selId:w.selId,drafts:[],hl:{...s.hl,items:[],loadedAt:0}});
+    if(s.tab==='historico') setTimeout(()=>this.loadHist(),0);
+  }
+
   // ---------- histórico compartilhado ----------
-  histDefName(){ const e=this.state.edition; return `Edição #${(e.number||'').trim()||'—'} · ${(e.date||'').trim()||'sem data'}`; }
+  histDefName(){ const e=this.state.edition; return `${this.state.model==='partners'?'Partners · Edição ':'Edição #'}${(e.number||'').trim()||'—'} · ${(e.date||'').trim()||'sem data'}`; }
   histMeta(){ const s=this.state, e=s.edition;
-    return { name:(e.histName||'').trim()||this.histDefName(), number:e.number||'', date:e.date||'', cards:s.cards.length,
+    return { name:(e.histName||'').trim()||this.histDefName(), model:s.model, number:e.number||'', date:e.date||'', cards:s.cards.length,
       titles:s.cards.filter(c=>c.kind!=='banner'&&c.title).slice(0,3).map(c=>this.plain(c.title)), by:s.conn.user, thumb:true }; }
   remoteDirty(){ const r=this.state.remote; return !r||this.snap()!==r.snap; }
-  optimistic(meta){ this._optim[meta.id]={...meta,_t:Date.now()}; this.setState(s=>({hl:{...s.hl,items:s.hl.trash?s.hl.items:[meta,...s.hl.items.filter(x=>x.id!==meta.id)]}})); }
+  optimistic(meta){ meta={model:this.state.model,...meta}; this._optim[meta.id]={...meta,_t:Date.now()}; this.setState(s=>({hl:{...s.hl,items:s.hl.trash?s.hl.items:[meta,...s.hl.items.filter(x=>x.id!==meta.id)]}})); }
   async loadHist(){
     if(!this.connOk()) return;
     const trash=this.state.hl.trash;
     this.setState(s=>({hl:{...s.hl,loading:true}}));
     try{
       const j=await this.api('/news'+(trash?'?trash=1':''));
-      let items=j.items||[];
+      const model=this.state.model;
+      let items=(j.items||[]).filter(x=>(x.model||'conecta')===model);
       if(!trash){ const now=Date.now();
-        Object.values(this._optim).forEach(o=>{ if(now-o._t>120000) return; const i=items.findIndex(x=>x.id===o.id); if(i<0) items.unshift(o); else if((items[i].version||0)<(o.version||0)) items[i]=o; });
+        Object.values(this._optim).forEach(o=>{ if(now-o._t>120000||(o.model||'conecta')!==model) return; const i=items.findIndex(x=>x.id===o.id); if(i<0) items.unshift(o); else if((items[i].version||0)<(o.version||0)) items[i]=o; });
         items=items.filter(x=>!this.isGone(x.id,'live'));
         items.sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt))); }
       else items=items.filter(x=>!this.isGone(x.id,'trash'));
-      if(this.state.hl.trash!==trash) return;
+      if(this.state.hl.trash!==trash||this.state.model!==model) return;
       this.setState(s=>({hl:{...s.hl,items,loading:false,loadedAt:Date.now()}}));
       this.loadThumbs(items);
     }catch(e){ this.setState(s=>({hl:{...s.hl,loading:false}})); this.flash('Não foi possível carregar o histórico: '+e.message); }
@@ -1197,7 +1286,7 @@ class Component extends DCLogic {
         await this.pool(missing||[],3,h=>this.api('/img/'+h,{method:'PUT',body:byHash[h],headers:{'Content-Type':'text/plain'}}));
       }
       const snap=this.snap();
-      const body=JSON.stringify({app:'digi-news-prudential',version:2,edition:s.edition,cards:s.cards,brand:s.brand,imageRefs:refs});
+      const body=JSON.stringify({app:'digi-news-prudential',version:2,model:s.model,edition:s.edition,cards:s.cards,brand:s.brand,imageRefs:refs});
       const meta=this.histMeta(); const X=m=>({'Content-Type':'application/json','X-Meta':encodeURIComponent(JSON.stringify(m))});
       const rm=s.remote; let res;
       if(rm&&rm.id&&!asNew){
@@ -1233,8 +1322,9 @@ class Component extends DCLogic {
     this.flash('Abrindo do histórico…');
     try{
       const {meta,d,images,lost}=await this.fetchRemote(it.id);
+      if((d.model||'conecta')!==this.state.model) this.switchModel(d.model||'conecta');
       this.hist.push(this.snap()); this.fut=[];
-      const brand=d.brand?{...this.defBrand(),...d.brand,fonts:{...(s.brand.fonts||{}),...(d.brand.fonts||{})}}:s.brand;
+      const brand=d.brand?this.mergeBrand({...d.brand,fonts:{...(s.brand.fonts||{}),...(d.brand.fonts||{})}}):s.brand;
       const cards=(d.cards||[]).map(c=>({...this.blankCard(),...c})); const edition={...this.defEdition(),...d.edition};
       this.setState({edition,cards,images:{...this.state.images,...images},brand,selId:cards[0]?cards[0].id:null,tab:'noticias',
         remote:{id:it.id,version:meta.version||it.version,name:meta.name||it.name,by:meta.by||it.by,updatedAt:meta.updatedAt||it.updatedAt,snap:JSON.stringify({cards,edition})}});
@@ -1250,9 +1340,9 @@ class Component extends DCLogic {
   }
   async jsonRemote(it){
     try{ this.flash('Preparando arquivo…'); const {d,images}=await this.fetchRemote(it.id);
-      const data={app:'digi-news-prudential',version:1,savedAt:new Date().toISOString(),edition:d.edition,cards:d.cards,images,brand:d.brand};
+      const data={app:'digi-news-prudential',version:1,model:d.model||'conecta',savedAt:new Date().toISOString(),edition:d.edition,cards:d.cards,images,brand:d.brand};
       const n=((d.edition&&d.edition.number)||'').trim();
-      this.download(new Blob([JSON.stringify(data)],{type:'application/json'}),'news-conecta-pem'+(n?'-edicao-'+n.replace(/[^\w-]+/g,''):'')+'.json'); this.flash('Arquivo baixado.'); }
+      this.download(new Blob([JSON.stringify(data)],{type:'application/json'}),Component.MODELS[d.model||'conecta'].file+(n?'-edicao-'+n.replace(/[^\w-]+/g,''):'')+'.json'); this.flash('Arquivo baixado.'); }
     catch(e){ this.flash('Não foi possível baixar: '+e.message); }
   }
   // Esconde por 2 min o item da lista local (o KV pode levar até 60 s para refletir a mudança em todo lugar).
@@ -1467,10 +1557,10 @@ class Component extends DCLogic {
         onDel:e=>{e.stopPropagation(); if(!confirm(`Excluir “${(c.title||'Sem título').replace(/\*\*|==/g,'')}”? (dá para desfazer)`)) return; const a=s.cards.filter(x=>x.id!==c.id); this.commit({cards:a,selId:s.selId===c.id?(a[i]||a[i-1]||{}).id||null:s.selId});}};
     });
 
-    const cats=[...new Set([...Object.keys(s.brand.catColors||{}),...s.cards.map(c=>c.category).filter(Boolean)])];
+    const cats=[...new Set([...Object.keys(this.catMap()),...s.cards.map(c=>c.category).filter(Boolean)])];
     const catRows=cats.map(name=>{ const col=this.tabColor(name); return {name,color:col,bg:TB[col].bg,fg:TB[col].fg,
-      onColor:e=>this.updBrand({catColors:{...s.brand.catColors,[name]:e.target.value}}),
-      onDel:()=>{ const cc={...s.brand.catColors}; delete cc[name]; this.updBrand({catColors:cc}); }}; });
+      onColor:e=>this.setCatMap({...this.catMap(),[name]:e.target.value}),
+      onDel:()=>{ const cc={...this.catMap()}; delete cc[name]; this.setCatMap(cc); }}; });
     const fontRows=Component.FONTS.map(f=>{ const up=s.brand.fonts&&s.brand.fonts[f.slot]; return {label:f.label,status:up?'Enviada: '+up.name:'Usando Open Sans (substituta)',stColor:up?'#0B6B44':'#8A8A8A',onFile:e=>this.onFont(f.slot,e)}; });
 
     const tabs=[['noticias','Notícias'],['edicao','Edição'],['colar','Colar texto'],['historico','Histórico'],['marca','Marca e testes']].map(([k,l])=>({label:l,onClick:()=>{ this.setState({tab:k}); if(k==='historico'&&Date.now()-s.hl.loadedAt>15000) setTimeout(()=>this.loadHist(),0); },color:s.tab===k?'#EA0356':'#6B6B6B',weight:s.tab===k?600:500,line:s.tab===k?'#EA0356':'transparent'}));
@@ -1484,10 +1574,22 @@ class Component extends DCLogic {
       number:e=>this.updEdition({number:e.target.value},'num'), date:e=>this.updEdition({date:e.target.value},'date'),
       hfx:e=>this.updEdition({hfx:+e.target.value},'hfx'), hfy:e=>this.updEdition({hfy:+e.target.value},'hfy'), hz:e=>this.updEdition({hz:+e.target.value/100},'hz'),
       hero:async e=>{ const r=await this.storeImage(e); if(r) this.updEdition({hero:r.key,hfx:50,hfy:50,hz:1}); },
-      removeHero:()=>this.updEdition({hero:null}), histName:e=>this.updEdition({histName:e.target.value},'hn'),
+      removeHero:()=>this.updEdition({hero:null}), pTagline:e=>this.updEdition({pTagline:e.target.value},'ptag'), histName:e=>this.updEdition({histName:e.target.value},'hn'),
       aiHero:()=>this.openAI('hero')
     };
     const bk=k=>e=>this.updBrand({[k]:e.target.value});
+    const bpk=k=>e=>this.updBrand({partners:{...this.state.brand.partners,[k]:e.target.value}});
+    const edBrandP={title:bpk('title'),tagline:bpk('tagline'),footText:bpk('footText'),slogan:bpk('slogan'),insta:bpk('insta')};
+    const MD=Component.MODELS[s.model], isP=s.model==='partners', light=isP&&s.edition.pTheme==='light';
+    const BP=s.brand.partners||{};
+    const pLines=String(BP.title||'').split('\n').map(x=>x.trim()).filter(Boolean);
+    const pTagline=(s.edition.pTagline||'').trim()?s.edition.pTagline:BP.tagline||'';
+    const modelVals={ isPartners:isP, isConecta:!isP, modelName:MD.name, introText:MD.intro, datePh:MD.datePh, edBrandP,
+      modelOpts:Object.entries(Component.MODELS).map(([k,m])=>({label:m.label,onClick:()=>this.switchModel(k),border:s.model===k?'#1A1A1A':'#E3E3E3',bg:s.model===k?'#1A1A1A':'#fff',color:s.model===k?'#fff':'#1A1A1A',shadow:s.model===k?'0 6px 16px rgba(0,0,0,.18)':'none'})),
+      themeOpts:[['dark','Escuro (azul-marinho)'],['light','Claro (branco)']].map(([k,l])=>({label:l,onClick:()=>this.updEdition({pTheme:k}),...pill((s.edition.pTheme||'dark')===k)})),
+      hd:{bg:light?'#FFFFFF':'#0D2143',logo:light?'assets/logo-prudential-navy.png':'assets/logo-prudential-branco.png',sub:light?'#5A6472':'rgba(255,255,255,.85)',tag:light?'#4A5568':'#FFFFFF',circle:light?'#9FB3C8':'#405773',tagTop:98+pLines.length*55+10},
+      pTitle:pLines.map((t,i)=>({t,c:i===0?(light?'#0D2143':'#FFFFFF'):'#1A7BC9'})),
+      pTagline, pEdLine:`Edição ${(s.edition.number||'').trim()||'—'} | ${(s.edition.date||'').trim()||'—'}` };
     const edBrand={aiStyle:bk('aiStyle'),t1:bk('t1'),t2:bk('t2'),tagline:bk('tagline'),disclaimer:bk('disclaimer'),insta:bk('insta'),slogan:bk('slogan'),footTag:bk('footTag')};
     const drafts=s.drafts.map((d,i)=>{ const x=[]; if(d.list) x.push('lista'); if(d.notice) x.push('aviso'); if(d.quote) x.push('citação'); if(d.author) x.push('autor'); if(d.cta) x.push('chamada'); if(d.validity) x.push('validade'); if(d.caption) x.push('legenda'); if(d.credit) x.push('crédito'); if(d.audience) x.push('públicos válidos');
       return {...d,n:i+1,extras:x.join(', '),onCat:e=>this.updDraft(i,{category:e.target.value}),onTitle:e=>this.updDraft(i,{title:e.target.value}),onBody:e=>this.updDraft(i,{body:e.target.value}),onImg:e=>this.updDraft(i,{hasImage:e.target.checked}),onDel:()=>this.setState(st=>({drafts:st.drafts.filter((_,k)=>k!==i)}))}; });
@@ -1563,7 +1665,7 @@ class Component extends DCLogic {
       onKey:e=>{ if(e.key==='Enter'&&(e.metaKey||e.ctrlKey)){ e.preventDefault(); this.sendAI(); } },
       send:()=>this.sendAI(), cantSend:a.busy||!String(a.input||'').trim()||!aiReady, sendOp:a.busy||!String(a.input||'').trim()||!aiReady?.45:1 };
     const ed0=s.edition;
-    return { ...remoteVals, ai,
+    return { ...remoteVals, ...modelVals, ai,
       tabs, tabNoticias:s.tab==='noticias', tabEdicao:s.tab==='edicao', tabColar:s.tab==='colar', tabMarca:s.tab==='marca',
       undo:()=>this.undo(), redo:()=>this.redo(), noUndo:!this.hist.length, noRedo:!this.fut.length, undoOp:this.hist.length?1:.45, redoOp:this.fut.length?1:.45,
       cardCount:s.cards.length, noCards:!s.cards.length, cardList, hasSel:!!sel, sel:selV, ed, caseOpts, kindOpts, bannerOpts, catNames:cats,
