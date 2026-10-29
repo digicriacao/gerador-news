@@ -232,7 +232,9 @@ input,textarea,select,button{font-family:inherit}
                       <select value="{{sel.imgLayout}}" onChange="{{ed.imgLayout}}" style="padding:10px 12px;border:1px solid #E3E3E3;border-radius:8px;font-size:13px;background:#fff;color:#1A1A1A">
                         <option value="auto">Automático ({{sel.imgAuto}})</option>
                         <option value="right">Lateral direita (com esfumado)</option>
+                        <option value="rightFlat">Lateral direita (sem esfumado)</option>
                         <option value="left">Lateral esquerda (com esfumado)</option>
+                        <option value="leftFlat">Lateral esquerda (sem esfumado)</option>
                         <option value="circle">Círculo à direita do texto</option>
                         <option value="circleLeft">Círculo à esquerda do texto</option>
                         <option value="top">Faixa no topo do card</option>
@@ -631,15 +633,15 @@ input,textarea,select,button{font-family:inherit}
                         </div>
                       </sc-if>
                       <sc-if value="{{c.isRight}}" hint-placeholder-val="{{ false }}">
-                        <div style="position:absolute;top:0;right:0;bottom:0;width:47%;overflow:hidden;-webkit-mask-image:linear-gradient(to right,transparent 0,#000 30%);mask-image:linear-gradient(to right,transparent 0,#000 30%);background:{{c.imgBg}}">
+                        <div style="position:absolute;top:0;right:0;bottom:0;width:{{c.sideW}};overflow:hidden;-webkit-mask-image:{{c.maskR}};mask-image:{{c.maskR}};background:{{c.imgBg}}">
                           <sc-if value="{{c.imgSrc}}" hint-placeholder-val="{{ false }}"><img src="{{c.imgSrc}}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:{{c.fit}};object-position:{{c.fx}}% {{c.fy}}%;transform:scale({{c.zoom}});transform-origin:{{c.fx}}% {{c.fy}}%"></sc-if>
-                          <sc-if value="{{c.imgPending}}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(255,255,255,.18) 0 8px,rgba(255,255,255,.05) 8px 16px),#7E8FA1;display:flex;align-items:center;justify-content:center;padding-left:30%;box-sizing:border-box;font-family:'Open Sans',Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;color:#fff;text-align:center">IMAGEM PENDENTE</div></sc-if>
+                          <sc-if value="{{c.imgPending}}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(255,255,255,.18) 0 8px,rgba(255,255,255,.05) 8px 16px),#7E8FA1;display:flex;align-items:center;justify-content:center;padding-left:{{c.pendPad}};box-sizing:border-box;font-family:'Open Sans',Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;color:#fff;text-align:center">IMAGEM PENDENTE</div></sc-if>
                         </div>
                       </sc-if>
                       <sc-if value="{{c.isLeft}}" hint-placeholder-val="{{ false }}">
-                        <div style="position:absolute;top:0;left:0;bottom:0;width:47%;overflow:hidden;-webkit-mask-image:linear-gradient(to left,transparent 0,#000 30%);mask-image:linear-gradient(to left,transparent 0,#000 30%);background:{{c.imgBg}}">
+                        <div style="position:absolute;top:0;left:0;bottom:0;width:{{c.sideW}};overflow:hidden;-webkit-mask-image:{{c.maskL}};mask-image:{{c.maskL}};background:{{c.imgBg}}">
                           <sc-if value="{{c.imgSrc}}" hint-placeholder-val="{{ false }}"><img src="{{c.imgSrc}}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:{{c.fit}};object-position:{{c.fx}}% {{c.fy}}%;transform:scale({{c.zoom}});transform-origin:{{c.fx}}% {{c.fy}}%"></sc-if>
-                          <sc-if value="{{c.imgPending}}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(255,255,255,.18) 0 8px,rgba(255,255,255,.05) 8px 16px),#7E8FA1;display:flex;align-items:center;justify-content:center;padding-right:30%;box-sizing:border-box;font-family:'Open Sans',Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;color:#fff;text-align:center">IMAGEM PENDENTE</div></sc-if>
+                          <sc-if value="{{c.imgPending}}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(255,255,255,.18) 0 8px,rgba(255,255,255,.05) 8px 16px),#7E8FA1;display:flex;align-items:center;justify-content:center;padding-right:{{c.pendPad}};box-sizing:border-box;font-family:'Open Sans',Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;color:#fff;text-align:center">IMAGEM PENDENTE</div></sc-if>
                         </div>
                       </sc-if>
                       <sc-if value="{{c.dots}}" hint-placeholder-val="{{ false }}">
@@ -1371,7 +1373,7 @@ class Component extends DCLogic {
       const pv=(this.state.conn.status&&this.state.conn.status.providers)||{};
       let aspect='landscape';
       if(target==='hero') aspect='square';
-      else if(target==='card'){ const c=this.state.cards.find(x=>x.id===id); const L=c?(c.imgLayout==='auto'?this.autoImgLayout(c):c.imgLayout):'right'; aspect={top:'wide',right:'portrait',left:'portrait',circle:'square',circleLeft:'square'}[L]||'landscape'; }
+      else if(target==='card'){ const c=this.state.cards.find(x=>x.id===id); const L=c?(c.imgLayout==='auto'?this.autoImgLayout(c):c.imgLayout):'right'; aspect={top:'wide',right:'portrait',left:'portrait',rightFlat:'portrait',leftFlat:'portrait',circle:'square',circleLeft:'square'}[L]||'landscape'; }
       this.aiSess[key]={provider:pv.openai||!pv.gemini?'openai':'gemini',aspect,quality:'medium',styleOn:true,input:'',busy:false,msgs:[],baseIdx:-1};
     }
     this.setState({ai:{...this.aiSess[key],open:true,key,target,cardId:id||null}});
@@ -1475,20 +1477,21 @@ class Component extends DCLogic {
       const ctaOn=!!(c.cta||'').trim();
       const hasQuote=!!(c.quote||'').trim();
       const portraitSrc=c.portraitOn&&c.portrait?s.images[c.portrait]:'';
-      const isBanner=c.kind==='banner', side=L==='right'||L==='left', circ=L==='circle'||L==='circleLeft';
+      const isBanner=c.kind==='banner', flat=L==='rightFlat'||L==='leftFlat', onR=L==='right'||L==='rightFlat', onL=L==='left'||L==='leftFlat', side=onR||onL, circ=L==='circle'||L==='circleLeft';
       const aud=(c.audience||'').trim();
-      const overImg=isBanner||L==='right';
+      const overImg=isBanner||onR;
       const AC={white:'#fff',navy:'#001F45',blue:'#007BC3'};
       const audColor=AC[c.audienceColor]||(overImg?'#fff':(P.dark||bgMap[c.id]==='gray'?'#fff':'#007BC3'));
       const audShadow=overImg&&audColor==='#fff'?'0 1px 3px rgba(0,31,69,.55)':'none';
       return {
         isBanner, isContent:!isBanner, bannerR:c.bannerFull?0:24, bannerM:c.bannerFull?-22:0,
         audience:aud, audR:isBanner&&c.bannerFull?16:10, audAlign:{top:'flex-start',bottom:'flex-end'}[c.audiencePos]||'center', audColor, audShadow,
-        isLeft:L==='left', textML:L==='left'?'auto':'0', padR:aud&&L!=='right'?34:24, dotsR:aud?30:16, circleOrder:L==='circleLeft'?-1:0,
+        isLeft:onL, textML:onL?'auto':'0', padR:aud&&!onR?34:24,
+        sideW:flat?'42%':'47%', maskR:flat?'none':'linear-gradient(to right,transparent 0,#000 30%)', maskL:flat?'none':'linear-gradient(to left,transparent 0,#000 30%)', pendPad:flat?'0':'30%', dotsR:aud?30:16, circleOrder:L==='circleLeft'?-1:0,
         id:c.id, category:c.category, tabShow, tabBg:t.bg, tabFg:t.fg, mt:tabShow&&i>0?16:0,
         onSel:()=>this.select(c.id), outline:c.id===s.selId?'2px solid #EA0356':'none',
         bg:P.bg, border:P.border, titleColor:P.title, bodyColor:P.body, muted:P.muted, accent:P.accent, imgBg:P.imgBg,
-        isTop:L==='top', isRight:L==='right', isCircle:circ,
+        isTop:L==='top', isRight:onR, isCircle:circ,
         imgSrc:src||'', imgPending:(c.hasImage||isBanner)&&!src, fit:c.fit||'cover', fx:c.fx??50, fy:c.fy??50, zoom:c.zoom??1,
         dots:L==='none'&&!hasQuote, dotColor:P.dot,
         textW:side?'58%':'100%', minH:Math.max(side?260:0,aud?Math.ceil(aud.length*4.8)+56:0),
@@ -1519,7 +1522,7 @@ class Component extends DCLogic {
       if(c.portraitOn&&!c.portrait) warnings.push({text:`${nm}: foto do autor da citação pendente.`,onClick:go});
       const len=(c.body||'').length+(c.list||'').length;
       if(len>1900) warnings.push({text:`${nm}: texto muito extenso para um card (${len} caracteres). Avalie dividir em dois cards, mantendo a redação.`,onClick:go});
-      if((this.imgLayout(c)==='right'||this.imgLayout(c)==='left')&&len>900) warnings.push({text:`${nm}: texto longo com imagem lateral; a imagem ficará muito recortada. Prefira “Faixa no topo”.`,onClick:go});
+      if(['right','left','rightFlat','leftFlat'].includes(this.imgLayout(c))&&len>900) warnings.push({text:`${nm}: texto longo com imagem lateral; a imagem ficará muito recortada. Prefira “Faixa no topo”.`,onClick:go});
       if((this.imgLayout(c)==='circle'||this.imgLayout(c)==='circleLeft')&&c.portraitOn) warnings.push({text:`${nm}: imagem em círculo e foto do autor no mesmo card; revise o equilíbrio.`,onClick:go});
     });
     if(s.newsH*2742/600>32000) warnings.push({text:`Edição muito longa (${s.newsH}px). A exportação em alta será reduzida automaticamente; considere dividir.`,onClick:()=>{}});
@@ -1529,7 +1532,7 @@ class Component extends DCLogic {
     const blank=this.blankCard();
     const sc=sel||blank;
     const ex=[]; if(this.lines(sc.list).length) ex.push('lista'); if((sc.notice||'').trim()) ex.push('aviso'); if((sc.quote||'').trim()) ex.push('citação'); if((sc.cta||'').trim()) ex.push('chamada'); if(sc.validity) ex.push('validade'); if(sc.credit) ex.push('crédito');
-    const IL={top:'faixa no topo',right:'lateral direita',left:'lateral esquerda',circle:'círculo',circleLeft:'círculo à esquerda'};
+    const IL={top:'faixa no topo',right:'lateral direita',rightFlat:'lateral direita sem esfumado',left:'lateral esquerda',leftFlat:'lateral esquerda sem esfumado',circle:'círculo',circleLeft:'círculo à esquerda'};
     const selImg=sc.image?s.images[sc.image]:'';
     const selV={...sc, n:selIdx+1, bgAuto:Component.BGNAME[bgMap[sc.id]||'navy']||'', imgAuto:IL[this.autoImgLayout(sc)], imgSrc:selImg||'', imgMissing:sc.hasImage&&!selImg, imgBtn:selImg?'Substituir imagem':'Enviar imagem', zoomPct:Math.round((sc.zoom||1)*100), zoomLabel:Math.round((sc.zoom||1)*100)+'%', contain:sc.fit==='contain', portraitSrc:sc.portrait?(s.images[sc.portrait]||''):'', portraitBtn:sc.portrait?'Substituir foto':'Enviar foto', isBanner:sc.kind==='banner', isContent:sc.kind!=='banner', bannerMissing:!selImg, bannerBtn:selImg?'Substituir banner':'Enviar banner', audiencePos:sc.audiencePos||'center', audienceColor:sc.audienceColor||'auto', extrasSummary:ex.length?'· '+ex.join(', '):'· nenhum'};
     const id=sc.id;
